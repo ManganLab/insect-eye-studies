@@ -1,0 +1,11 @@
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/CMakeFiles/rebuild_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/CMakeFiles/edit_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/wystrachRecreation/CMakeFiles/rebuild_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/wystrachRecreation/CMakeFiles/wystrachRecreation.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/wystrachRecreation/CMakeFiles/edit_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/rebuild_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/eyeGenerator.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/edit_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/sutil/CMakeFiles/rebuild_cache.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/sutil/CMakeFiles/sutil_sdk.dir
+/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/sutil/CMakeFiles/edit_cache.dir

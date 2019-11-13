@@ -1,0 +1,48 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/ninja cmTC_99a5e && [1/2] Building C object CMakeFiles/cmTC_99a5e.dir/src.c.o
+[2/2] Linking C executable cmTC_99a5e
+FAILED: cmTC_99a5e 
+: && /usr/bin/cc -fPIC -DCMAKE_HAVE_LIBC_PTHREAD  -rdynamic CMakeFiles/cmTC_99a5e.dir/src.c.o  -o cmTC_99a5e   && :
+/usr/bin/ld: CMakeFiles/cmTC_99a5e.dir/src.c.o: in function `main':
+src.c:(.text+0x3e): undefined reference to `pthread_create'
+/usr/bin/ld: src.c:(.text+0x4a): undefined reference to `pthread_detach'
+/usr/bin/ld: src.c:(.text+0x5b): undefined reference to `pthread_join'
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/ninja cmTC_4ce08 && [1/2] Building C object CMakeFiles/cmTC_4ce08.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_4ce08
+FAILED: cmTC_4ce08 
+: && /usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create  -rdynamic CMakeFiles/cmTC_4ce08.dir/CheckFunctionExists.c.o  -o cmTC_4ce08  -lpthreads && :
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
+
+
