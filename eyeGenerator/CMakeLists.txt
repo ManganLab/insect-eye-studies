@@ -33,6 +33,9 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   # See top level CMakeLists.txt file for documentation of OPTIX_add_sample_executable.
   OPTIX_add_sample_executable( eyeGenerator 
     eyeGenerator.cpp
+    TestClass.cpp
+    #SphericalCoordinate.h
+    #SphericalCoordinate.cpp
     )
 else()
   # GLUT or OpenGL not found

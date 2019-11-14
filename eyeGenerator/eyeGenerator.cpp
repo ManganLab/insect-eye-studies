@@ -7,12 +7,15 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "SphericalCoordinate.h"
+#include "TestClass.h"
+//#include "TestClass.h"
 
 int main(int argc, char** argv)
 {
   std::cout << "Running...\n";
-  SphericalCoordinate sc();
-  std::cout << sc.run() << endl;
+  //SphericalCoordinate sc();
+  //std::cout << sc.run() << endl;
+  TestClass test = TestClass();
+  std::cout << test.run() << endl;
   exit(1);
 }

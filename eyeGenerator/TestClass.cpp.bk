@@ -1,0 +1,19 @@
+#include <iostream>
+
+using namespace std;
+
+class TestClass{
+  public:
+    TestClass(void)
+    {
+      test = 5;
+    }
+    int run(void)
+    {
+      std::cout << "RUNNING 'run'" << endl;
+      return(test);
+    }
+  private:
+    int test;
+};
+
