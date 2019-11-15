@@ -2,7 +2,7 @@
 #define TESTCLASS_H
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
 class TestClass{
   public:

@@ -34,6 +34,8 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   OPTIX_add_sample_executable( eyeGenerator 
     eyeGenerator.cpp
     TestClass.cpp
+    NonPlanarCoordinate.h
+    SphericalCoordinate.cpp
     #SphericalCoordinate.h
     #SphericalCoordinate.cpp
     )

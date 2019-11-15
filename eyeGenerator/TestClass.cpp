@@ -6,7 +6,7 @@ TestClass::TestClass(void)
 }
 int TestClass::run(void)
 {
-  std::cout << "RUNNING 'run'" << endl;
+  std::cout << "RUNNING 'run'" << std::endl;
   return(test);
 }
 
