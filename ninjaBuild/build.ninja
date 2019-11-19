@@ -159,6 +159,14 @@ build eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o: CXX_COMPILER__ey
   OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
   OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
 
+build eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/NonPlanarCoordinate.cpp || cmake_object_order_depends_target_eyeGenerator
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
+  OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
+  OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
+
 build eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/SphericalCoordinate.cpp || cmake_object_order_depends_target_eyeGenerator
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
   DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o.d
@@ -175,7 +183,7 @@ build eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o: CXX_CO
 #############################################
 # Link the executable bin/eyeGenerator
 
-build bin/eyeGenerator: CXX_EXECUTABLE_LINKER__eyeGenerator eyeGenerator/CMakeFiles/eyeGenerator.dir/eyeGenerator.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
+build bin/eyeGenerator: CXX_EXECUTABLE_LINKER__eyeGenerator eyeGenerator/CMakeFiles/eyeGenerator.dir/eyeGenerator.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
   FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
   LINK_FLAGS = -rdynamic
   LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so

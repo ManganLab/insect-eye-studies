@@ -7,17 +7,18 @@
 
 //using namespace std;
 
-class SphericalCoordinate : public NonPlanarCoordinate {
+class SphericalCoordinate : public NonPlanarCoordinate<SphericalCoordinate> {
   public:
     SphericalCoordinate();
+    ~SphericalCoordinate();
     int run();
 
     // Virtual Overriders
     void randomMove(float scale);
-    float getClosestDistance(NonPlanarCoordinate* others);
+    float getClosestDistance(SphericalCoordinate* others);
     void backtrack();
   private:
-    int test;
+    float logitude, latitude;
 };
 
 #endif

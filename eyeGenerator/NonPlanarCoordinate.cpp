@@ -1,9 +1,12 @@
+#include "NonPlanarCoordinate.h"
 
-//class NonPlanarCoordinate {
-//  public:
-//    virtual void move(float scale) = 0;
-//
-//  protected:
-//
-//  private:
-//};
+using namespace std;
+
+NonPlanarCoordinate::NonPlanarCoordinate(void)
+{
+  cout << "NonPlanarCoordinate made" << endl;
+}
+NonPlanarCoordinate::~NonPlanarCoordinate(void)
+{
+  cout << "NonPlanarCoordinate destroyed" << endl;
+}
