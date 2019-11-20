@@ -35,7 +35,8 @@ int main(int argc, char** argv)
   int i;
 
   // Construct the coordinates on the heap
-  NonPlanarCoordinate* coordinates[COORDINATE_COUNT];
+  NonPlanarCoordinate<SphericalCoordinate>* coordinates[COORDINATE_COUNT];
+  //SphericalCoordinate* coordinates[COORDINATE_COUNT];
   for(i = 0; i<COORDINATE_COUNT; i++)
     coordinates[i] = new SphericalCoordinate();
 

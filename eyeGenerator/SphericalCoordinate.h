@@ -11,11 +11,11 @@ class SphericalCoordinate : public NonPlanarCoordinate<SphericalCoordinate> {
   public:
     SphericalCoordinate();
     ~SphericalCoordinate();
-    int run();
 
     // Virtual Overriders
     void randomMove(float scale);
     float getClosestDistance(SphericalCoordinate* others);
+    //float getClosestDistance(NonPlanarCoordinate* others);
     void backtrack();
   private:
     float logitude, latitude;

@@ -5,16 +5,10 @@
 SphericalCoordinate::SphericalCoordinate(void)
 {
   std::cout << "Spherical Coordinate object created" << std::endl;
-  test = 24;
 }
 SphericalCoordinate::~SphericalCoordinate(void)
 {
   std::cout << "Spherical Coordinate object destroyed" << std::endl;
-}
-
-int SphericalCoordinate::run(void)
-{
-  return(test);
 }
 
 void SphericalCoordinate::randomMove(float scale)
@@ -23,6 +17,7 @@ void SphericalCoordinate::randomMove(float scale)
 }
 
 float SphericalCoordinate::getClosestDistance(SphericalCoordinate* others)
+//float SphericalCoordinate::getClosestDistance(NonPlanarCoordinate* others)
 {
   // Do nothing.
   return(0.0f);
@@ -31,10 +26,4 @@ float SphericalCoordinate::getClosestDistance(SphericalCoordinate* others)
 void SphericalCoordinate::backtrack()
 {
   // Do nothing.
-}
-
-int SphericalCoordinate::printNumber()
-{
-  std::cout << "42" << std::endl;
-  return(42);
 }
