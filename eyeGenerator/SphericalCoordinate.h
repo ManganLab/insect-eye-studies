@@ -30,14 +30,18 @@ class SphericalCoordinate : public NonPlanarCoordinate {
     // Unique functions
     int getId();
 
-  private:
-    //float getDistanceTo(SphericalCoordinate* other);
+    void cloneTo(SphericalCoordinate* clone);
     float getFastDistanceTo(SphericalCoordinate* other);
-    void setLatLong(float lat, float lon);
+
+  private:
+    static const float3 VERTICAL;// = make_float(0.0f,0.0f,1.0f);
 
     int id;
     float3 state;// Stores the actual directional state of this object
     float3 oldState;// Stores the last directional state for backtracking
+
+    //float getDistanceTo(SphericalCoordinate* other);
+    void setLatLong(float lat, float lon);
 };
 
 #endif
