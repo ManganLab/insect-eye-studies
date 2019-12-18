@@ -538,6 +538,7 @@ void setupCamera()
 
 void setupLights()
 {
+
     BasicLight lights[] = { 
         { make_float3( -5.0f, 60.0f, -16.0f ), make_float3( 1.0f, 1.0f, 1.0f ), 1 }/*,
         { make_float3( 0.0f, -5.0f, 0.0f ), make_float3( 0.5f, 1.0f, 0.5f ), 1 }*/

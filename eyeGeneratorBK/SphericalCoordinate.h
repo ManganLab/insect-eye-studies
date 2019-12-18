@@ -26,7 +26,6 @@ class SphericalCoordinate : public NonPlanarCoordinate {
     float getClosestDistance(NonPlanarCoordinate* others[], int count);
     float getCloasestDistanceFast(NonPlanarCoordinate* others[], int count);
     void backtrack();
-    StaticCoordinate getStaticCoord();
 
     // Unique functions
     int getId();

@@ -30,24 +30,25 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   include_directories(${GLUT_INCLUDE_DIR})
   add_definitions(-DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA)
 
-  #set(THREADS_PREFER_PTHREAD_FLAG ON)
-  #find_package(Threads REQUIRED)
-  #target_link_libraries(my_app Threads::Threads)
+  ### SETTING LOCAL SOURCE FILES HERE NOW, SO THAT THE EYE GENERATOR CAN BE ADDED.
+  set(local_sources
+      eyeVisualiser.cpp
 
-  #find_package(Threads REQUIRED)
-  #if(THREADS_HAVE_PTHREAD_ARG)
-  #  target_compile_options(my_app PUBLIC "-pthread")
-  #endif()
-  #if(CMAKE_THREAD_LIBS_INIT)
-  #  target_link_libraries(my_app "${CMAKE_THREAD_LIBS_INIT}")
-  #endif()
+      # Cuda
+      environment.cu
+      billboard.cu
+      sphere.cu
+      cylinder.cu
+      #line.cu
+      )
+
+  # Include the eye generator stuff.
+  include("../eyeGenerator/CMakeIncludes.cmake")
+  add_eye_generator("../eyeGenerator" local_sources)
 
   # See top level CMakeLists.txt file for documentation of OPTIX_add_sample_executable.
-  OPTIX_add_sample_executable( eyeGenerator
-    EyeGenerator.cpp
-    NonPlanarCoordinate.cpp
-    SphericalCoordinate.cpp
-    main.cpp
+  OPTIX_add_sample_executable( eyeVisualiser
+    ${local_sources}
     )
 else()
   # GLUT or OpenGL not found

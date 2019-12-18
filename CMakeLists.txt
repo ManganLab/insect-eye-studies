@@ -256,7 +256,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sutil
                      ${OptiX_INCLUDE}/optixu
                      ${CMAKE_CURRENT_SOURCE_DIR}/support/mdl-sdk/include
                      ${CMAKE_CURRENT_BINARY_DIR}
-                     ${CUDA_INCLUDE_DIRS} )
+                     ${CUDA_INCLUDE_DIRS})
 
 include(FindSUtilGLUT)
 
@@ -321,9 +321,15 @@ function(OPTIX_add_sample_executable target_name)
     ${cmake_options}
     )
 
+  # Get the multithreading libraries.
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+  #target_link_libraries(my_app Threads::Threads)
+
   # Most of the samples link against the sutil library and the optix library.  Here is the
   # rule that specifies this linkage.
   target_link_libraries( ${target_name}
+    Threads::Threads
     sutil_sdk
     optix
     ${optix_rpath}
@@ -351,6 +357,8 @@ add_subdirectory(wystrachRecreation)
 
 # Add the eye generators
 add_subdirectory(eyeGenerator)
+add_subdirectory(eyeVisualiser)
+#add_subdirectory(eyeGenUtils)
 
 # Our sutil library.  The rules to build it are found in the subdirectory.
 add_subdirectory(sutil)

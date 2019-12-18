@@ -3,18 +3,6 @@
 
 #include <iostream>
 
-#include <optixu/optixu_vector_types.h>
-
-struct StaticCoordinate
-{
-#if defined(__cplusplus)
-  typedef optix::float3 float3;
-#endif
-  float3 position;
-  float3 direction;
-  int padding[2];// padding so this structure is 32 bytes.
-};
-
 class NonPlanarCoordinate {
   public:
     // Constructor and destructor
@@ -26,7 +14,6 @@ class NonPlanarCoordinate {
     virtual float getClosestDistance(NonPlanarCoordinate* others[], int count) = 0;
     virtual float getCloasestDistanceFast(NonPlanarCoordinate* others[], int count) = 0;
     virtual void backtrack() = 0; // Backtracks the last step
-    virtual StaticCoordinate getStaticCoord() = 0; // Returns this coordinate as a static coorinate.
   //protected:
   //  Some internal state that tracks position
 };

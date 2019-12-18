@@ -82,7 +82,7 @@ build cmake_object_order_depends_target_wystrachRecreation: phony || cmake_objec
 build wystrachRecreation/CMakeFiles/wystrachRecreation.dir/wystrachRecreation.cpp.o: CXX_COMPILER__wystrachRecreation ../wystrachRecreation/wystrachRecreation.cpp || cmake_object_order_depends_target_wystrachRecreation
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
   DEP_FILE = wystrachRecreation/CMakeFiles/wystrachRecreation.dir/wystrachRecreation.cpp.o.d
-  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
   INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
   OBJECT_DIR = wystrachRecreation/CMakeFiles/wystrachRecreation.dir
   OBJECT_FILE_DIR = wystrachRecreation/CMakeFiles/wystrachRecreation.dir
@@ -98,7 +98,7 @@ build wystrachRecreation/CMakeFiles/wystrachRecreation.dir/wystrachRecreation.cp
 build bin/wystrachRecreation: CXX_EXECUTABLE_LINKER__wystrachRecreation wystrachRecreation/CMakeFiles/wystrachRecreation.dir/wystrachRecreation.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
   FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
   LINK_FLAGS = -rdynamic
-  LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so
+  LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -pthread -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so
   OBJECT_DIR = wystrachRecreation/CMakeFiles/wystrachRecreation.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -143,18 +143,10 @@ build eyeGenerator/rebuild_cache: phony eyeGenerator/CMakeFiles/rebuild_cache.ut
 
 build cmake_object_order_depends_target_eyeGenerator: phony || cmake_object_order_depends_target_sutil_sdk
 
-build eyeGenerator/CMakeFiles/eyeGenerator.dir/eyeGenerator.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/eyeGenerator.cpp || cmake_object_order_depends_target_eyeGenerator
+build eyeGenerator/CMakeFiles/eyeGenerator.dir/EyeGenerator.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/EyeGenerator.cpp || cmake_object_order_depends_target_eyeGenerator
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
-  DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/eyeGenerator.cpp.o.d
-  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
-  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
-  OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
-  OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
-
-build eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/TestClass.cpp || cmake_object_order_depends_target_eyeGenerator
-  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
-  DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o.d
-  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/EyeGenerator.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
   INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
   OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
   OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
@@ -162,7 +154,7 @@ build eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o: CXX_COMPILER__ey
 build eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/NonPlanarCoordinate.cpp || cmake_object_order_depends_target_eyeGenerator
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
   DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o.d
-  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
   INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
   OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
   OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
@@ -170,7 +162,15 @@ build eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o: CXX_CO
 build eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/SphericalCoordinate.cpp || cmake_object_order_depends_target_eyeGenerator
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
   DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o.d
-  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
+  OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
+  OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
+
+build eyeGenerator/CMakeFiles/eyeGenerator.dir/main.cpp.o: CXX_COMPILER__eyeGenerator ../eyeGenerator/main.cpp || cmake_object_order_depends_target_eyeGenerator
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeGenerator/CMakeFiles/eyeGenerator.dir/main.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
   INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include
   OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
   OBJECT_FILE_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
@@ -183,10 +183,10 @@ build eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o: CXX_CO
 #############################################
 # Link the executable bin/eyeGenerator
 
-build bin/eyeGenerator: CXX_EXECUTABLE_LINKER__eyeGenerator eyeGenerator/CMakeFiles/eyeGenerator.dir/eyeGenerator.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/TestClass.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
+build bin/eyeGenerator: CXX_EXECUTABLE_LINKER__eyeGenerator eyeGenerator/CMakeFiles/eyeGenerator.dir/EyeGenerator.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/NonPlanarCoordinate.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/SphericalCoordinate.cpp.o eyeGenerator/CMakeFiles/eyeGenerator.dir/main.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
   FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
   LINK_FLAGS = -rdynamic
-  LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so
+  LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -pthread -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so
   OBJECT_DIR = eyeGenerator/CMakeFiles/eyeGenerator.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -204,6 +204,94 @@ build eyeGenerator/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
   restat = 1
 
 build eyeGenerator/edit_cache: phony eyeGenerator/CMakeFiles/edit_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /home/blayze/Software/Optix-6.0.0/studies/CMakeLists.txt
+# =============================================================================
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build eyeVisualiser/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser && /usr/bin/cmake -S/home/blayze/Software/Optix-6.0.0/studies -B/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build eyeVisualiser/rebuild_cache: phony eyeVisualiser/CMakeFiles/rebuild_cache.util
+
+# =============================================================================
+# Object build statements for EXECUTABLE target eyeVisualiser
+
+
+#############################################
+# Order-only phony target for eyeVisualiser
+
+build cmake_object_order_depends_target_eyeVisualiser: phony || cmake_object_order_depends_target_sutil_sdk
+
+build eyeVisualiser/CMakeFiles/eyeVisualiser.dir/eyeVisualiser.cpp.o: CXX_COMPILER__eyeVisualiser ../eyeVisualiser/eyeVisualiser.cpp || cmake_object_order_depends_target_eyeVisualiser
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/eyeVisualiser.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include -I../eyeVisualiser/../eyeGenerator
+  OBJECT_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+  OBJECT_FILE_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+
+build eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/EyeGenerator.cpp.o: CXX_COMPILER__eyeVisualiser ../eyeGenerator/EyeGenerator.cpp || cmake_object_order_depends_target_eyeVisualiser
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/EyeGenerator.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include -I../eyeVisualiser/../eyeGenerator
+  OBJECT_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+  OBJECT_FILE_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator
+
+build eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/NonPlanarCoordinate.cpp.o: CXX_COMPILER__eyeVisualiser ../eyeGenerator/NonPlanarCoordinate.cpp || cmake_object_order_depends_target_eyeVisualiser
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/NonPlanarCoordinate.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include -I../eyeVisualiser/../eyeGenerator
+  OBJECT_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+  OBJECT_FILE_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator
+
+build eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/SphericalCoordinate.cpp.o: CXX_COMPILER__eyeVisualiser ../eyeGenerator/SphericalCoordinate.cpp || cmake_object_order_depends_target_eyeVisualiser
+  DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
+  DEP_FILE = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/SphericalCoordinate.cpp.o.d
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
+  INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include -I../eyeVisualiser/../eyeGenerator
+  OBJECT_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+  OBJECT_FILE_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target eyeVisualiser
+
+
+#############################################
+# Link the executable bin/eyeVisualiser
+
+build bin/eyeVisualiser: CXX_EXECUTABLE_LINKER__eyeVisualiser eyeVisualiser/CMakeFiles/eyeVisualiser.dir/eyeVisualiser.cpp.o eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/EyeGenerator.cpp.o eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/NonPlanarCoordinate.cpp.o eyeVisualiser/CMakeFiles/eyeVisualiser.dir/__/eyeGenerator/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
+  FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
+  LINK_FLAGS = -rdynamic
+  LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -pthread -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so
+  OBJECT_DIR = eyeVisualiser/CMakeFiles/eyeVisualiser.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = bin/eyeVisualiser
+  TARGET_PDB = eyeVisualiser.dbg
+
+
+#############################################
+# Utility command for edit_cache
+
+build eyeVisualiser/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser && /usr/bin/cmake-gui -S/home/blayze/Software/Optix-6.0.0/studies -B/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild
+  DESC = Running CMake cache editor...
+  pool = console
+  restat = 1
+
+build eyeVisualiser/edit_cache: phony eyeVisualiser/CMakeFiles/edit_cache.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
@@ -339,6 +427,8 @@ build sutil/edit_cache: phony sutil/CMakeFiles/edit_cache.util
 
 build eyeGenerator: phony bin/eyeGenerator
 
+build eyeVisualiser: phony bin/eyeVisualiser
+
 build libsutil_sdk.so: phony lib/libsutil_sdk.so
 
 build sutil_sdk: phony lib/libsutil_sdk.so
@@ -354,6 +444,13 @@ build wystrachRecreation: phony bin/wystrachRecreation
 # Folder: /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator
 
 build eyeGenerator/all: phony eyeGenerator
+
+# =============================================================================
+
+#############################################
+# Folder: /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser
+
+build eyeVisualiser/all: phony eyeVisualiser
 
 # =============================================================================
 
@@ -381,7 +478,7 @@ build wystrachRecreation/all: phony wystrachRecreation
 #############################################
 # The main all target.
 
-build all: phony bin/wystrachRecreation bin/eyeGenerator lib/libsutil_sdk.so
+build all: phony bin/wystrachRecreation bin/eyeGenerator bin/eyeVisualiser lib/libsutil_sdk.so
 
 
 #############################################
@@ -392,14 +489,14 @@ default all
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | ../CMake/CompilerInfo.cmake ../CMake/ConfigCompilerFlags.cmake ../CMake/FindCUDA.cmake ../CMake/FindCUDA/select_compute_arch.cmake ../CMake/FindMDLWrapper.cmake ../CMake/FindOptiX.cmake ../CMake/FindSUtilGLUT.cmake ../CMake/LinuxCPUInfo.cmake ../CMake/Macros.cmake ../CMake/sse_support.h.in ../CMakeLists.txt ../eyeGenerator/CMakeLists.txt ../sampleConfig.h.in ../sutil/CMakeLists.txt ../wystrachRecreation/CMakeLists.txt /usr/share/cmake-3.15/Modules/CMakeCInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.15/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.15/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.15/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.15/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.15/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckCXXCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.15/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.15/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU.cmake /usr/share/cmake-3.15/Modules/FindGLUT.cmake /usr/share/cmake-3.15/Modules/FindOpenGL.cmake /usr/share/cmake-3.15/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.15/Modules/FindPackageMessage.cmake /usr/share/cmake-3.15/Modules/FindThreads.cmake /usr/share/cmake-3.15/Modules/Internal/CMakeCheckCompilerFlag.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.15/Modules/Platform/Linux.cmake /usr/share/cmake-3.15/Modules/Platform/UnixPaths.cmake /usr/share/cmake-3.15/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/3.15.4/CMakeCCompiler.cmake CMakeFiles/3.15.4/CMakeCXXCompiler.cmake CMakeFiles/3.15.4/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | ../CMake/CompilerInfo.cmake ../CMake/ConfigCompilerFlags.cmake ../CMake/FindCUDA.cmake ../CMake/FindCUDA/select_compute_arch.cmake ../CMake/FindMDLWrapper.cmake ../CMake/FindOptiX.cmake ../CMake/FindSUtilGLUT.cmake ../CMake/LinuxCPUInfo.cmake ../CMake/Macros.cmake ../CMake/sse_support.h.in ../CMakeLists.txt ../eyeGenerator/CMakeIncludes.cmake ../eyeGenerator/CMakeLists.txt ../eyeVisualiser/CMakeLists.txt ../sampleConfig.h.in ../sutil/CMakeLists.txt ../wystrachRecreation/CMakeLists.txt /usr/share/cmake-3.15/Modules/CMakeCInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.15/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.15/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.15/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.15/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.15/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckCXXCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.15/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.15/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU.cmake /usr/share/cmake-3.15/Modules/FindGLUT.cmake /usr/share/cmake-3.15/Modules/FindOpenGL.cmake /usr/share/cmake-3.15/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.15/Modules/FindPackageMessage.cmake /usr/share/cmake-3.15/Modules/FindThreads.cmake /usr/share/cmake-3.15/Modules/Internal/CMakeCheckCompilerFlag.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.15/Modules/Platform/Linux.cmake /usr/share/cmake-3.15/Modules/Platform/UnixPaths.cmake /usr/share/cmake-3.15/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/3.15.4/CMakeCCompiler.cmake CMakeFiles/3.15.4/CMakeCXXCompiler.cmake CMakeFiles/3.15.4/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build ../CMake/CompilerInfo.cmake ../CMake/ConfigCompilerFlags.cmake ../CMake/FindCUDA.cmake ../CMake/FindCUDA/select_compute_arch.cmake ../CMake/FindMDLWrapper.cmake ../CMake/FindOptiX.cmake ../CMake/FindSUtilGLUT.cmake ../CMake/LinuxCPUInfo.cmake ../CMake/Macros.cmake ../CMake/sse_support.h.in ../CMakeLists.txt ../eyeGenerator/CMakeLists.txt ../sampleConfig.h.in ../sutil/CMakeLists.txt ../wystrachRecreation/CMakeLists.txt /usr/share/cmake-3.15/Modules/CMakeCInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.15/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.15/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.15/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.15/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.15/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckCXXCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.15/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.15/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU.cmake /usr/share/cmake-3.15/Modules/FindGLUT.cmake /usr/share/cmake-3.15/Modules/FindOpenGL.cmake /usr/share/cmake-3.15/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.15/Modules/FindPackageMessage.cmake /usr/share/cmake-3.15/Modules/FindThreads.cmake /usr/share/cmake-3.15/Modules/Internal/CMakeCheckCompilerFlag.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.15/Modules/Platform/Linux.cmake /usr/share/cmake-3.15/Modules/Platform/UnixPaths.cmake /usr/share/cmake-3.15/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/3.15.4/CMakeCCompiler.cmake CMakeFiles/3.15.4/CMakeCXXCompiler.cmake CMakeFiles/3.15.4/CMakeSystem.cmake: phony
+build ../CMake/CompilerInfo.cmake ../CMake/ConfigCompilerFlags.cmake ../CMake/FindCUDA.cmake ../CMake/FindCUDA/select_compute_arch.cmake ../CMake/FindMDLWrapper.cmake ../CMake/FindOptiX.cmake ../CMake/FindSUtilGLUT.cmake ../CMake/LinuxCPUInfo.cmake ../CMake/Macros.cmake ../CMake/sse_support.h.in ../CMakeLists.txt ../eyeGenerator/CMakeIncludes.cmake ../eyeGenerator/CMakeLists.txt ../eyeVisualiser/CMakeLists.txt ../sampleConfig.h.in ../sutil/CMakeLists.txt ../wystrachRecreation/CMakeLists.txt /usr/share/cmake-3.15/Modules/CMakeCInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCXXInformation.cmake /usr/share/cmake-3.15/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake /usr/share/cmake-3.15/Modules/CMakeCommonLanguageInclude.cmake /usr/share/cmake-3.15/Modules/CMakeGenericSystem.cmake /usr/share/cmake-3.15/Modules/CMakeInitializeConfigs.cmake /usr/share/cmake-3.15/Modules/CMakeLanguageInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInformation.cmake /usr/share/cmake-3.15/Modules/CMakeSystemSpecificInitialize.cmake /usr/share/cmake-3.15/Modules/CheckCCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckCXXCompilerFlag.cmake /usr/share/cmake-3.15/Modules/CheckCXXSourceCompiles.cmake /usr/share/cmake-3.15/Modules/CheckIncludeFile.cmake /usr/share/cmake-3.15/Modules/CheckLibraryExists.cmake /usr/share/cmake-3.15/Modules/Compiler/CMakeCommonCompilerMacros.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-C.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Compiler/GNU.cmake /usr/share/cmake-3.15/Modules/FindGLUT.cmake /usr/share/cmake-3.15/Modules/FindOpenGL.cmake /usr/share/cmake-3.15/Modules/FindPackageHandleStandardArgs.cmake /usr/share/cmake-3.15/Modules/FindPackageMessage.cmake /usr/share/cmake-3.15/Modules/FindThreads.cmake /usr/share/cmake-3.15/Modules/Internal/CMakeCheckCompilerFlag.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-C.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU-CXX.cmake /usr/share/cmake-3.15/Modules/Platform/Linux-GNU.cmake /usr/share/cmake-3.15/Modules/Platform/Linux.cmake /usr/share/cmake-3.15/Modules/Platform/UnixPaths.cmake /usr/share/cmake-3.15/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/3.15.4/CMakeCCompiler.cmake CMakeFiles/3.15.4/CMakeCXXCompiler.cmake CMakeFiles/3.15.4/CMakeSystem.cmake: phony
 
 
 #############################################

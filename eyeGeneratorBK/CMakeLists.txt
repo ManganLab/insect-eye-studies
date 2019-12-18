@@ -30,24 +30,12 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   include_directories(${GLUT_INCLUDE_DIR})
   add_definitions(-DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA)
 
-  #set(THREADS_PREFER_PTHREAD_FLAG ON)
-  #find_package(Threads REQUIRED)
-  #target_link_libraries(my_app Threads::Threads)
-
-  #find_package(Threads REQUIRED)
-  #if(THREADS_HAVE_PTHREAD_ARG)
-  #  target_compile_options(my_app PUBLIC "-pthread")
-  #endif()
-  #if(CMAKE_THREAD_LIBS_INIT)
-  #  target_link_libraries(my_app "${CMAKE_THREAD_LIBS_INIT}")
-  #endif()
-
   # See top level CMakeLists.txt file for documentation of OPTIX_add_sample_executable.
-  OPTIX_add_sample_executable( eyeGenerator
+  OPTIX_add_sample_executable( eyeGenerator 
     EyeGenerator.cpp
+    TestClass.cpp
     NonPlanarCoordinate.cpp
     SphericalCoordinate.cpp
-    main.cpp
     )
 else()
   # GLUT or OpenGL not found

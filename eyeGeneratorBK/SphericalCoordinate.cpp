@@ -129,13 +129,5 @@ void SphericalCoordinate::cloneTo(SphericalCoordinate* clone)
   clone->state.z = state.z;
 }
 
-StaticCoordinate SphericalCoordinate::getStaticCoord()
-{
-  StaticCoordinate sc;
-  sc.direction = state;
-  sc.position = state * radius;
-  return sc;
-}
-
 float SphericalCoordinate::radius = 5;
 const float3 SphericalCoordinate::VERTICAL = make_float3(0.0f, 0.0f, 1.0f);

@@ -13,31 +13,25 @@
 #include "SphericalCoordinate.h"
 
 static int COORDINATE_COUNT = 1000;
-static float STEP_SIZE = 5.0f;
+static float STEP_SIZE = 5.0f;// 10 works well too.
 
 using namespace std;
 
-/// TODO: This will ultimately be a class with a type parameter for the subclass of NonPlanarCoordinate that it will use.
 
-int main(int argc, char** argv)
+void iterate(NonPlanarCoordinate* coordinates[])
 {
-  std::cout << "Running with " << COORDINATE_COUNT << " coordinates..." << std::endl;
-  srand(42);
+  std::cout << "Running with " << COORDINATE_COUNT << " coordinates and step size " << STEP_SIZE << "..." << std::endl;
   int i;
 
-  SphericalCoordinate::radius = 2;
-
-  // Construct the coordinates on the heap
-  NonPlanarCoordinate* coordinates[COORDINATE_COUNT];
-  float avgFastDistance, variance;
-  for(i = 0; i<COORDINATE_COUNT; i++)
-    coordinates[i] = new SphericalCoordinate(i);
+  // Sort some line stuff:
+  cout << endl << endl << endl << "[3A";
 
   // Iterate N times, morphing the positions of the coordinates...
+  float avgFastDistance, variance;
   float fastDistances[COORDINATE_COUNT];
-  for(int iteration = 0; iteration<10000; iteration++)
-  {
-    cout << "Iteration " << (iteration+1) << ":" << endl;
+  int iteration = 0;
+  do {
+    cout << "[s" << "Iteration " << ++iteration << ":" << endl;//"8";
     random_shuffle(&coordinates[0], &coordinates[3]); // Shuffle
     
     //// Calculate statistics about the current state
@@ -56,7 +50,7 @@ int main(int argc, char** argv)
 
     //// Move the coordinates
     cout << "  Average [fast] distance: " << avgFastDistance << endl;
-    cout << "  Variance: " << variance << endl;
+    cout << "  Variance: " << variance << "8";
 
     // Now take each coordinate and move it a step, reverting it if the step has taken it closer to any coordinate.
     for(i = 0; i<COORDINATE_COUNT; i++)
@@ -66,33 +60,39 @@ int main(int argc, char** argv)
       if(coordinates[i]->getCloasestDistanceFast(coordinates, COORDINATE_COUNT) < fastDistances[i])
         coordinates[i]->backtrack(); // Backtrack if the step was a bad one.
     }
-  }
+  }while(variance > 0.0001 && iteration < 100001);
+
+  // Some more line stuff:
+  cout << "[3B";
 
   //// Free the memory
   //for(i = 0; i<COORDINATE_COUNT; i++)
   //  delete coordinates[i];
 
-  // Experimental area
-  //for (i = 0; i< 100; i++)
-  //{
-  //  SphericalCoordinate sc = SphericalCoordinate(42);
-  //  SphericalCoordinate scClone = SphericalCoordinate(43);
-  //  cout << "Test SC created: " << sc.getId() << endl;
-  //  cout << "Clone SC created: " << scClone.getId() << endl;
+  //exit(1);
+}
 
-  //  sc.cloneTo(&scClone);
+void freeList(NonPlanarCoordinate* coordinates[])
+{
+  for(int i = 0; i<COORDINATE_COUNT; i++)
+    delete coordinates[i]; // Remove from heap
+}
 
-  //  cout << "Distance between sc and clone: " << sc.getFastDistanceTo(&scClone) << endl;
-  //  cout << endl<< "Manipulating clone by 0.0f ..." << endl;
+int main(int argc, char** argv)
+{
+  srand(42);
 
-  //  scClone.randomMove(0.0f);
-  //  cout << "Distance between sc and clone: " << sc.getFastDistanceTo(&scClone) << endl;
+  SphericalCoordinate::radius = 2;
+  // Construct the coordinates on the heap
+  NonPlanarCoordinate* coordinates[COORDINATE_COUNT];
 
-  //  cout << "Manipulating clone by 1.0f..." << endl;
+  for(int i = 0; i<COORDINATE_COUNT; i++)
+    coordinates[i] = new SphericalCoordinate(i);
 
-  //  scClone.randomMove(1.0f);
-  //  cout << "Distance between sc and clone: " << sc.getFastDistanceTo(&scClone) << endl;
-  //}
+  iterate(coordinates);
+
+  // Free the memory
+  freeList(coordinates);
 
   exit(1);
 }
