@@ -14,8 +14,6 @@
 #include <optixu/optixu_math_stream_namespace.h>
 
 #include <sutil.h>
-#include "common.h"
-//#include "random.h"
 #include <Arcball.h>
 
 #include <cstdlib>
@@ -37,6 +35,7 @@ using namespace optix;
 //// STATIC GLOBALS
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
 const char* DIRECTORY_NAME = "eyeVisualiser";
+const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
 const int OMMATIDIAL_COUNT = 500;
 
 //// Global Variables
@@ -302,14 +301,14 @@ void createGeometry()
   // Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
   std::vector<GeometryInstance> gis;
 
-  const char *cylinderPtx = sutil::getPtxString(DIRECTORY_NAME, "cylinder.cu");
+  const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
 
   // Ommatidial rays
   for(i = 0; i<OMMATIDIAL_COUNT; i++)
   {
     ommatidialRays[i] = context->createGeometry();
     ommatidialRays[i]->setPrimitiveCount(1u);
-    //ptx = sutil::getPtxString(DIRECTORY_NAME, "cylinder.cu");
+    //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
     ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
     ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
     ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));

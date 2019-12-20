@@ -272,6 +272,7 @@ void createContext()
     context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, miss_name ) );
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
     const std::string texpath = texture_path + "/" + std::string( "environment.hdr" );
+    std::cout << "TEXTURE PATH: "<< texture_path << std::endl;
     //context["envmap"]->setTextureSampler( sutil::loadTexture( context, texpath, default_color) );
 #ifdef DEBUG
     context["bg_color"]->setFloat( make_float3( 0.34f, 0.55f, 0.85f ) );

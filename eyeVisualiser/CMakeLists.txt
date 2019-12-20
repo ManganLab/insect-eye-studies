@@ -36,10 +36,7 @@ if(GLUT_FOUND AND OPENGL_FOUND)
 
       # Cuda
       environment.cu
-      billboard.cu
-      sphere.cu
-      cylinder.cu
-      #line.cu
+      ../commonPrimitives/cylinder.cu
       )
 
   # Include the eye generator stuff.

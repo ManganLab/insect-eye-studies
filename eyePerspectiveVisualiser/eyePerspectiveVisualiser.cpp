@@ -14,8 +14,6 @@
 #include <optixu/optixu_math_stream_namespace.h>
 
 #include <sutil.h>
-#include "common.h"
-//#include "random.h"
 #include <Arcball.h>
 
 #include <cstdlib>
@@ -36,8 +34,9 @@ using namespace optix;
 
 //// STATIC GLOBALS
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
-const char* DIRECTORY_NAME = "eyeVisualiser";
-const int OMMATIDIAL_COUNT = 500;
+const char* DIRECTORY_NAME = "eyePerspectiveVisualiser";
+const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
+const int OMMATIDIAL_COUNT = 100;
 
 //// Global Variables
 Context      context;
@@ -46,7 +45,6 @@ uint32_t     height = 240u;
 bool         use_pbo = true;
 EyeGenerator eg(OMMATIDIAL_COUNT);
 thread* eyeGeneratorThreadPtr;
-//StaticCoordinate renderRays[OMMATIDIAL_COUNT];
 
 const char* environment_ptx;
 
@@ -138,8 +136,12 @@ void createContext()
     context["bad_color"]->setFloat(DEFAULT_ERROR_COLOUR);
 
     // Miss program
-    context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss" ) );
-    context["bg_color"]->setFloat( make_float3(1.0f));// Make the background white
+    context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss_env" ) );
+    //const std::string texpath = std::string( "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr" );
+    const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
+    const float3 default_color = make_float3(0.0f, 1.0f, 1.0f);
+    context["envmap"]->setTextureSampler( sutil::loadTexture( context, texpath, default_color) );
+    //context["bg_color"]->setFloat( make_float3(1.0f));// Make the background white
 }
 
 void destroyContext()
@@ -302,14 +304,14 @@ void createGeometry()
   // Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
   std::vector<GeometryInstance> gis;
 
-  const char *cylinderPtx = sutil::getPtxString(DIRECTORY_NAME, "cylinder.cu");
+  const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
 
   // Ommatidial rays
   for(i = 0; i<OMMATIDIAL_COUNT; i++)
   {
     ommatidialRays[i] = context->createGeometry();
     ommatidialRays[i]->setPrimitiveCount(1u);
-    //ptx = sutil::getPtxString(DIRECTORY_NAME, "cylinder.cu");
+    //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
     ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
     ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
     ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
@@ -320,7 +322,7 @@ void createGeometry()
     Material ray_matl = context->createMaterial();
     Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
     ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
-    ray_matl["ambient_light_color"]->setFloat(make_float3(0.0f));
+    ray_matl["ambient_light_color"]->setFloat(make_float3(1.0f));
 
     gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
   }
@@ -428,6 +430,7 @@ int main(int argc, char** argv)
   srand(42);
   eg.generateSphericalCoordinates();
   eg.stepSize = 0.001f;
+  eg.coordinateProximityCount = 10;
 
   cout << "Starting thread...";
   //thread eyeGeneratorThread(EyeGenerator::basicIterator, &eg);

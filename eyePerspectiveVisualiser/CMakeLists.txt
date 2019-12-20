@@ -32,14 +32,11 @@ if(GLUT_FOUND AND OPENGL_FOUND)
 
   ### SETTING LOCAL SOURCE FILES HERE NOW, SO THAT THE EYE GENERATOR CAN BE ADDED.
   set(local_sources
-      eyeVisualiser.cpp
+      eyePerspectiveVisualiser.cpp
 
       # Cuda
       environment.cu
-      billboard.cu
-      sphere.cu
-      cylinder.cu
-      #line.cu
+      ../commonPrimitives/cylinder.cu
       )
 
   # Include the eye generator stuff.

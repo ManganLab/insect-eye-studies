@@ -319,9 +319,9 @@ build eyePerspectiveVisualiser/rebuild_cache: phony eyePerspectiveVisualiser/CMa
 
 build cmake_object_order_depends_target_eyePerspectiveVisualiser: phony || cmake_object_order_depends_target_sutil_sdk
 
-build eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyeVisualiser.cpp.o: CXX_COMPILER__eyePerspectiveVisualiser ../eyePerspectiveVisualiser/eyeVisualiser.cpp || cmake_object_order_depends_target_eyePerspectiveVisualiser
+build eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyePerspectiveVisualiser.cpp.o: CXX_COMPILER__eyePerspectiveVisualiser ../eyePerspectiveVisualiser/eyePerspectiveVisualiser.cpp || cmake_object_order_depends_target_eyePerspectiveVisualiser
   DEFINES = -DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA
-  DEP_FILE = eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyeVisualiser.cpp.o.d
+  DEP_FILE = eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyePerspectiveVisualiser.cpp.o.d
   FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops   -pthread
   INCLUDES = -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include -I../sutil -I../ -I/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/include/optixu -I../support/mdl-sdk/include -I. -I/opt/cuda/include -I../eyePerspectiveVisualiser/../eyeGenerator
   OBJECT_DIR = eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir
@@ -359,7 +359,7 @@ build eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGen
 #############################################
 # Link the executable bin/eyePerspectiveVisualiser
 
-build bin/eyePerspectiveVisualiser: CXX_EXECUTABLE_LINKER__eyePerspectiveVisualiser eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyeVisualiser.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/EyeGenerator.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/NonPlanarCoordinate.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
+build bin/eyePerspectiveVisualiser: CXX_EXECUTABLE_LINKER__eyePerspectiveVisualiser eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/eyePerspectiveVisualiser.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/EyeGenerator.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/NonPlanarCoordinate.cpp.o eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir/__/eyeGenerator/SphericalCoordinate.cpp.o | lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so /usr/lib/libglut.so /usr/lib/libXmu.so /usr/lib/libXi.so /usr/lib/libGL.so /usr/lib/libGLU.so /opt/cuda/lib64/libnvrtc.so || lib/libsutil_sdk.so
   FLAGS = -fPIC -march=opteron -mtune=opteron   -msse -msse2 -msse3 -mfpmath=sse -O3 -DNDEBUG -g3 -funroll-loops
   LINK_FLAGS = -rdynamic
   LINK_LIBRARIES = -Wl,-rpath,/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/lib:/home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64:/opt/cuda/lib64 lib/libsutil_sdk.so /home/blayze/Software/Optix-6.0.0/NVIDIA-OptiX-SDK-6.0.0-linux64/lib64/liboptix.so -Wl,--disable-new-dtags -lm -pthread -lglut -lXmu -lXi -lGL -lGLU /opt/cuda/lib64/libnvrtc.so

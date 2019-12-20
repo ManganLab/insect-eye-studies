@@ -24,6 +24,9 @@ rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtBuffer<uchar4, 2>              output_buffer;
 
+const float ONEHUNDREDTWENTY_DEGREES = 120.0f/180.0f * M_PIf;
+const float THIRTY_DEGREES = 30.0f/180.0f * M_PIf;
+
 
 // A simple pinhole camera
 RT_PROGRAM void pinhole_camera()
@@ -45,13 +48,55 @@ RT_PROGRAM void pinhole_camera()
   output_buffer[launch_index] = make_color( prd.result );
 }
 
+// A camera that only outputs green
+RT_PROGRAM void green_camera()
+{
+  output_buffer[launch_index] = make_color(make_float3(0.0f,1.0f,0.0f));
+}
+
+// A camera that finds the closest ommatidium to each point as a point on a sphere and renders from it's perspective
+RT_PROGRAM void ommatidial_camera()
+{
+  size_t2 screen = output_buffer.size();
+  // Full panorama:
+  //float2 d = make_float2(launch_index) / make_float2(screen) * make_float2(2.0f * M_PIf, M_PIf) - make_float2(M_PIf, M_PIf/2.0f);
+  // 30 degree from the floor (vertical range of -30 deg to 90 deg):
+  float2 d = make_float2(launch_index) / make_float2(screen) * make_float2(2.0f * M_PIf, ONEHUNDREDTWENTY_DEGREES) - make_float2(M_PIf, THIRTY_DEGREES);
+  //float3 ray_origin = renderPosition;
+  float3 ray_direction = make_float3(sin(d.x)*cos(d.y), sin(d.y), cos(d.x)*cos(d.y));// This should already be normalized, as it is a sphere.
+
+  // ray_direction now acts as a point on the sphere to render to, the closest ommatidium must be rendered now (TODO: in the future, pre-render each and do this bit in a separate shader)
+
+  optix::Ray ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon);
+
+  PerRayData_radiance prd;
+  prd.importance = 1.0f;
+  prd.depth = 0;
+
+  rtTrace(top_object, ray, prd);
+
+  output_buffer[launch_index] = make_color(prd.result);
+}
+
 ///// MISS SHADERS
 
 rtDeclareVariable(float3, bg_color, , );
 // The default miss program
 RT_PROGRAM void miss()
 {
-  prd_radiance.result = bg_color;
+  //prd_radiance.result = bg_color;
+  prd_radiance.result = make_float3(1.0f, 0.0f, 0.0f);
+}
+
+rtTextureSampler<float4, 2> envmap;
+RT_PROGRAM void miss_env()
+{
+  float theta = atan2f(ray.direction.x, ray.direction.z);
+  float phi = M_PIf * 0.5f - acosf(ray.direction.y);
+  float u = (theta + M_PIf) * (0.5f * M_1_PIf);
+  float v = 0.5f * (1.0f + sin(phi));
+  prd_radiance.result = make_float3(tex2D(envmap, u, v));
+  //prd_radiance.result = make_float3(1.0f, 0.0f, 0.0f);
 }
 
 //
