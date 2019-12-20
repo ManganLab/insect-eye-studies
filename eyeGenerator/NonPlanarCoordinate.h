@@ -22,6 +22,8 @@ class NonPlanarCoordinate {
     virtual ~NonPlanarCoordinate();
     // Takes a step in a random direction and distance (Scaled by `scale`)
     virtual void randomMove(float scale) = 0;
+    // Calculates the energy (a function of how close other coordinates are to this coordinate)
+    virtual float getEnergy(NonPlanarCoordinate* others[], int count, int proximity) = 0;
     // Returns the distance to the closest other NonPlanarCoordinate object (which usually has to be of the same class type)
     virtual float getClosestDistance(NonPlanarCoordinate* others[], int count) = 0;
     virtual float getCloasestDistanceFast(NonPlanarCoordinate* others[], int count) = 0;

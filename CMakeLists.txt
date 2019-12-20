@@ -358,7 +358,7 @@ add_subdirectory(wystrachRecreation)
 # Add the eye generators
 add_subdirectory(eyeGenerator)
 add_subdirectory(eyeVisualiser)
-#add_subdirectory(eyeGenUtils)
+add_subdirectory(eyePerspectiveVisualiser)
 
 # Our sutil library.  The rules to build it are found in the subdirectory.
 add_subdirectory(sutil)

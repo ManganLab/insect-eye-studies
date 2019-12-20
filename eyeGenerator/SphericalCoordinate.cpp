@@ -12,6 +12,7 @@ inline float randRange(float min, float max)
 SphericalCoordinate::SphericalCoordinate(int idin)//void)
 {
   state = normalize(make_float3(randRange(-1.0f,1.0f),randRange(-1.0f,1.0f),randRange(-1.0f,1.0f)));
+  //state = make_float3(randRange(-0.5f,0.5f), 1.0f, randRange(-0.5f,0.5f));
   id = idin + 1;
   //std::cout << "Spherical Coordinate object created" << std::endl;
 }
@@ -30,7 +31,7 @@ void SphericalCoordinate::randomMove(float scale)
   oldState = make_float3(state.x, state.y, state.z);
   /// Take a step at `stepAngle` degrees to north with `scale` distance.
   float stepAngle = randRange(0,2*M_PI);
-  float stepDistance = scale;//randRange(0.0f,scale);
+  float stepDistance = randRange(0.0f,scale);
   /// Formulate the vector offset from the Vertical
   float3 offset = normalize(make_float3(cos(stepAngle)*stepDistance, sin(stepAngle)*stepDistance, 1.0f));// TODO: Note that this is a planar projection onto a sphere.
   //float3 offset = make_float3(0.0f,0.0f,1.0f);// offset points directly up (like vertical).
@@ -81,10 +82,15 @@ inline float SphericalCoordinate::getClosestDistance(NonPlanarCoordinate* others
 // Returns distance as an angle as it's faster, the slow version will just scale it properly.
 float SphericalCoordinate::getCloasestDistanceFast(NonPlanarCoordinate* others[], int count)
 {
-  int i;
+  int i,o;
+  float temp;
   //cout << "Vector " << this->getId() << ": (" <<  this->state.x << ", " << this->state.y << ", " << this->state.z << ")" << endl;
 
-  float closestDistance = std::numeric_limits<float>::max();
+  const int CLOSEST_COUNT = 3;
+  float nClosest[CLOSEST_COUNT];
+  for(i = 0; i<CLOSEST_COUNT; i++)
+    nClosest[i] = std::numeric_limits<float>::max();
+
   for(i = 0; i<count; i++)
   {
     SphericalCoordinate* sc = (SphericalCoordinate*)others[i];
@@ -93,11 +99,69 @@ float SphericalCoordinate::getCloasestDistanceFast(NonPlanarCoordinate* others[]
 
     // Claculate the distance to each of them
     float distance = this->getFastDistanceTo(sc);
-    if(distance <= closestDistance)
-      closestDistance = distance;
+
+    if(distance <= nClosest[CLOSEST_COUNT-1])// If it's closer than the furthest closest
+    {
+      nClosest[CLOSEST_COUNT-1] = distance;// Remove the previous furthest closest
+      // Then iterate down the array, shuffling this distance into position using an in-line sort.
+      for(o = CLOSEST_COUNT-1; o>0; o--)
+      {
+        if(nClosest[o-1] > distance)
+        {
+          temp = nClosest[o-1];
+          nClosest[o-1] = nClosest[o];
+          nClosest[o] = temp;
+        }
+      }
+    }
   }
+
+  float sumClosestDistance = nClosest[0];
+  for(i = 1; i<CLOSEST_COUNT; i++)
+    sumClosestDistance *= nClosest[i];
     
-  return(closestDistance);
+  return(sumClosestDistance);
+}
+
+float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, int proximity)
+{
+  int i,o;
+  float temp;
+
+  float nClosest[proximity];
+  for(i = 0; i<proximity; i++)
+    nClosest[i] = -1.0f;
+
+  for(i = 0; i<count; i++)
+  {
+    SphericalCoordinate* sc = (SphericalCoordinate*)others[i];
+    if(sc == this)
+      continue; // Skip comparing with itself
+
+    // Claculate the distance to each of them
+    float energyDistance = 1.0f/this->getFastDistanceTo(sc);// The denominator could be raised to a power (but is not here)
+
+    if(energyDistance > nClosest[proximity-1])// If it's got a higher energy than the lowest-energy closest coordinate
+    {
+      nClosest[proximity-1] = energyDistance;// Remove the previous lowest-energy closest
+      // Then iterate down the array, shuffling this energyDistance into position using an in-line sort.
+      for(o = proximity-1; o>0; o--)
+      {
+        if(nClosest[o-1] < energyDistance)
+        {
+          temp = nClosest[o-1];
+          nClosest[o-1] = nClosest[o];
+          nClosest[o] = temp;
+        }
+      }
+    }
+  }
+
+  float totalEnergy = nClosest[0];
+  for(i = 1; i<proximity; i++)
+    totalEnergy += nClosest[i];
+    
+  return(totalEnergy);
 }
 
 void SphericalCoordinate::backtrack()

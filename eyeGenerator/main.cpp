@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 
   EyeGenerator eg(100);
   eg.generateSphericalCoordinates();
+  eg.stepSize = 0.01f;
 
   cout << "Size of StaticCoordinate: " << sizeof(StaticCoordinate) << endl;
 
@@ -33,7 +34,8 @@ int main(int argc, char** argv)
   //EyeGenerator::basicIterator(&eg);
 
   cout << "Starting thread...";
-  thread testThread(EyeGenerator::basicIterator, &eg);
+  //thread testThread(EyeGenerator::basicIterator, &eg);
+  thread testThread(EyeGenerator::rieszSEnergyIterator, &eg);
   if(testThread.joinable())
     testThread.join();
   cout << "Thread joined." << endl;

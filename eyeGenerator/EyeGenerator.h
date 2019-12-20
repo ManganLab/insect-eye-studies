@@ -7,6 +7,7 @@
 class EyeGenerator {
   public:
     static void basicIterator(EyeGenerator* eg);
+    static void rieszSEnergyIterator(EyeGenerator* eg);
 
     int coordinateCount;
     
@@ -16,9 +17,14 @@ class EyeGenerator {
     void generateSphericalCoordinates();
     void test();
     StaticCoordinate getCoordinateInfo(int i);
+    void stop();
+
+    float stepSize;
+    float coordinateProximityCount;
   
   private:
     NonPlanarCoordinate** coordinates;
+    bool stopFlag;
     
 };
 

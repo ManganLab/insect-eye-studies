@@ -30,12 +30,25 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   include_directories(${GLUT_INCLUDE_DIR})
   add_definitions(-DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA)
 
+  ### SETTING LOCAL SOURCE FILES HERE NOW, SO THAT THE EYE GENERATOR CAN BE ADDED.
+  set(local_sources
+      eyeVisualiser.cpp
+
+      # Cuda
+      environment.cu
+      billboard.cu
+      sphere.cu
+      cylinder.cu
+      #line.cu
+      )
+
+  # Include the eye generator stuff.
+  include("../eyeGenerator/CMakeIncludes.cmake")
+  add_eye_generator("../eyeGenerator" local_sources)
+
   # See top level CMakeLists.txt file for documentation of OPTIX_add_sample_executable.
-  OPTIX_add_sample_executable( eyeGenerator 
-    EyeGenerator.cpp
-    TestClass.cpp
-    NonPlanarCoordinate.cpp
-    SphericalCoordinate.cpp
+  OPTIX_add_sample_executable( eyePerspectiveVisualiser
+    ${local_sources}
     )
 else()
   # GLUT or OpenGL not found

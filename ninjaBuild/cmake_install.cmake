@@ -42,6 +42,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/wystrachRecreation/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser/cmake_install.cmake")
+  include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiser/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/sutil/cmake_install.cmake")
 
 endif()
