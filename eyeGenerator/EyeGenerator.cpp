@@ -59,33 +59,42 @@ StaticCoordinate EyeGenerator::getCoordinateInfo(int i)
 
 void EyeGenerator::rieszSEnergyIterator(EyeGenerator* eg)
 {
+  int i;
+
   // This can reference anything within eg because it's the same class.
   std::cout << "Running riesz s-energy distribution with " << eg->coordinateCount << " coordinates and step size " << eg->stepSize << "..." << std::endl;
-  int i;
 
   // Sort some line stuff:
   std::cout << std::endl << std::endl << std::endl << "[3A";
 
+  // Generate an index list to shuffle
+  int indicies[eg->coordinateCount];
+  for(i = 0; i<eg->coordinateCount; i++)
+    indicies[i] = i;
+
   // Iterate N times, morphing the positions of the coordinates...
   float currentEnergy, avgEnergy, sumEnergy, sumEnergyVar, energyVar = 1.0f;
-  int iteration = 0;
+  int currentIndex, iteration = 0;
   do {
     std::cout << "[s" << "Iteration " << ++iteration << ":" << std::endl;
     // Shuffle the coordinates. We could have just produced a shuffled list of indicies, but seeing as these
     // are only pointers, shuffling them here seems fine.
-    std::random_shuffle(&(eg->coordinates)[0], &(eg->coordinates)[eg->coordinateCount]);
-    //std::random_shuffle(&(eg->coordinates)[0], &(eg->coordinates)[3]);
+    //std::random_shuffle(&(eg->coordinates)[0], &(eg->coordinates)[eg->coordinateCount]);
+    std::random_shuffle(&indicies[0], &indicies[eg->coordinateCount]);
 
     sumEnergy = 0.0f;
     sumEnergyVar = 0.0f;
     for(i = 0; i<eg->coordinateCount; i++)
     {
-      currentEnergy = eg->coordinates[i]->getEnergy(eg->coordinates, eg->coordinateCount, eg->coordinateProximityCount);// Store the current energy
+      // Get the current index via lookup through randomised table
+      currentIndex = indicies[i];
+
+      currentEnergy = eg->coordinates[currentIndex]->getEnergy(eg->coordinates, eg->coordinateCount, eg->coordinateProximityCount);// Store the current energy
       sumEnergy += currentEnergy;
       sumEnergyVar += (currentEnergy - avgEnergy) * (currentEnergy - avgEnergy);// Technically computing the previous iteration's variance.
-      eg->coordinates[i]->randomMove(eg->stepSize * energyVar);// Move the coordinate by a random amount (scaled by the last avg energy - which should decrease)// TODO
-      if(eg->coordinates[i]->getEnergy(eg->coordinates, eg->coordinateCount, eg->coordinateProximityCount) > currentEnergy)// We want to decrease total energy.
-        eg->coordinates[i]->backtrack();// Backtrack if the step was a bad one
+      eg->coordinates[currentIndex]->randomMove(eg->stepSize * energyVar);// Move the coordinate by a random amount (scaled by the last avg energy - which should decrease)// TODO
+      if(eg->coordinates[currentIndex]->getEnergy(eg->coordinates, eg->coordinateCount, eg->coordinateProximityCount) > currentEnergy)// We want to decrease total energy.
+        eg->coordinates[currentIndex]->backtrack();// Backtrack if the step was a bad one
     }
     avgEnergy = sumEnergy/eg->coordinateCount;
     energyVar = sumEnergyVar/eg->coordinateCount;
