@@ -36,7 +36,7 @@ using namespace optix;
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
 const char* DIRECTORY_NAME = "eyePerspectiveVisualiser";
 const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
-const int OMMATIDIAL_COUNT = 100;
+const int OMMATIDIAL_COUNT = 1000;//38;//1000;
 
 //// Global Variables
 Context      context;
@@ -72,7 +72,7 @@ void createContext();
 void createGeometry();
 void setBillboardNormalAndOrigin(Geometry& billboard, float3 normal, float3 origin);
 void setupCamera();
-//void setupRenderRays();
+void setupRenderRays();
 
 void glutDisplay();
 void glutKeyboardPress( unsigned char k, int x, int y );
@@ -126,9 +126,10 @@ void createContext()
 
 
     // Ray generation program
-    std::string camera_name = "pinhole_camera";
+    std::string camera_name = "ommatidial_camera";
     Program ray_gen_program = context->createProgramFromPTXString( environment_ptx, camera_name );
     context->setRayGenerationProgram( 0, ray_gen_program );
+    ray_gen_program["renderPosition"]->setFloat(make_float3(0.0f));
 
     // Exception program
     Program exception_program = context->createProgramFromPTXString( environment_ptx, "exception" );
@@ -296,7 +297,7 @@ void glutResize( int w, int h )
 
 GeometryGroup gg;
 Geometry line;
-Geometry ommatidialRays[OMMATIDIAL_COUNT];
+//Geometry ommatidialRays[OMMATIDIAL_COUNT];
 //// Geometry
 void createGeometry()
 {
@@ -304,28 +305,29 @@ void createGeometry()
   // Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
   std::vector<GeometryInstance> gis;
 
-  const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
+  //////// THE RAYS AREN'T ADDED HERE, THEY'RE POSITIONS IN AN ARRAY IN THE CONTEXT.
+  //const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
 
-  // Ommatidial rays
-  for(i = 0; i<OMMATIDIAL_COUNT; i++)
-  {
-    ommatidialRays[i] = context->createGeometry();
-    ommatidialRays[i]->setPrimitiveCount(1u);
-    //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
-    ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
-    ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
-    ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
-    ommatidialRays[i]["direction"]->setFloat(normalize(make_float3(0.0f,0.0f,1.0f)));
-    ommatidialRays[i]["cylinderLength"]->setFloat(0.5f);
-    ommatidialRays[i]["radius"]->setFloat(0.01f);
+  //// Ommatidial rays
+  //for(i = 0; i<OMMATIDIAL_COUNT; i++)
+  //{
+  //  ommatidialRays[i] = context->createGeometry();
+  //  ommatidialRays[i]->setPrimitiveCount(1u);
+  //  //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
+  //  ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
+  //  ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
+  //  ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
+  //  ommatidialRays[i]["direction"]->setFloat(normalize(make_float3(0.0f,0.0f,1.0f)));
+  //  ommatidialRays[i]["cylinderLength"]->setFloat(0.5f);
+  //  ommatidialRays[i]["radius"]->setFloat(0.01f);
 
-    Material ray_matl = context->createMaterial();
-    Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
-    ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
-    ray_matl["ambient_light_color"]->setFloat(make_float3(1.0f));
+  //  Material ray_matl = context->createMaterial();
+  //  Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
+  //  ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
+  //  ray_matl["ambient_light_color"]->setFloat(make_float3(1.0f));
 
-    gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
-  }
+  //  gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
+  //}
 
   // Assembling the geometry group
   gg = context->createGeometryGroup();
@@ -369,15 +371,60 @@ void setupCamera()
     camera_rotate  = Matrix4x4::identity();
 }
 
+Buffer ommatidialBuffer;
+float3 sphericalPositions[OMMATIDIAL_COUNT];
 void updateOmmatidialRays()
 {
-  StaticCoordinate sc;
+  // This bit is for the visualiser, not the perspecetive visualiser.
+  //StaticCoordinate sc;
+  //for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+  //{
+  //  sc = eg.getCoordinateInfo(i);
+  //  ommatidialRays[i]["direction"]->setFloat(sc.direction);
+  //  ommatidialRays[i]["origin"]->setFloat(sc.position);
+  //}
+
+  // This bit is for the perspectiv visualiser.
+  //memcpy(ommatidialBuffer->map(), sphericalPositions, sizeof(sphericalPositions));
+  //context["ommatidia"]->set(ommatidialBuffer);
+
+  //// WORKING?:
+  Buffer b = context["ommatidia"]->getBuffer();
+  //std::cout << "b: " << b << std::endl;
+  //std::cout << "el size: " << b->getElementSize() << std::endl;
+  //RTsize length;
+  //b->getSize(length);
+  //std::cout << "b size: " << length << std::endl;
+  //std::cout << "OMMATIDIAL_COUNT: " << OMMATIDIAL_COUNT << std::endl;
+
+  float3 newdata[OMMATIDIAL_COUNT];
   for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-  {
-    sc = eg.getCoordinateInfo(i);
-    ommatidialRays[i]["direction"]->setFloat(sc.direction);
-    ommatidialRays[i]["origin"]->setFloat(sc.position);
-  }
+    newdata[i] = eg.getCoordinateInfo(i).direction;
+
+  b->setFormat(RT_FORMAT_USER);
+  memcpy(b->map(), newdata, sizeof(newdata));
+  b->unmap();
+
+  //float3* data;
+  //b->map(0, RT_BUFFER_MAP_READ_WRITE, data);
+  //std::cout << "data: " << data << std::endl;
+  //cout << "sizeof(data): " << sizeof(data) << endl;
+  ////cout << "data[0]: " << data[0] << endl;
+  //cout << "Making data..." << endl;
+  //data[0] = make_float3(1.0f,1.0f,1.0f);
+  //cout << "done!" << endl;
+  //b->unmap();
+  
+  //rtBufferMap(b->get(), (void**)data);
+  //rtBufferUnmap(b->get());
+
+  //for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+  //{
+  //  //data[i] = eg.getCoordinateInfo(i).direction;
+  //  float3 omm = data[i];
+  //  std::cout << "(" << omm.x << ", " << omm.y << ", " << omm.z << ")" << std::endl;
+  //}
+  //b->unmap();
 }
 //float count = 0.0f;
 void updateCameraRender()
@@ -420,6 +467,26 @@ void updateCameraRender()
   context["W"  ]->setFloat( camera_w );
 }
 
+void setupRenderRays()
+{
+  StaticCoordinate sc;
+  for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+  {
+    sc = eg.getCoordinateInfo(i);
+    sphericalPositions[i] = sc.direction;
+  }
+
+  Buffer ommatidialBuffer;
+  ommatidialBuffer = context->createBuffer(RT_BUFFER_INPUT);
+  ommatidialBuffer->setFormat(RT_FORMAT_USER);
+  ommatidialBuffer->setElementSize(sizeof(float3));
+  ommatidialBuffer->setSize(sizeof(sphericalPositions)/sizeof(sphericalPositions[0]));
+  memcpy(ommatidialBuffer->map(), sphericalPositions, sizeof(sphericalPositions));
+  ommatidialBuffer->unmap();
+
+  context["ommatidia"]->set(ommatidialBuffer);
+}
+
 int main(int argc, char** argv)
 {
   //SphericalCoordinate* sc = new SphericalCoordinate(1);
@@ -450,7 +517,7 @@ int main(int argc, char** argv)
     createContext();
     createGeometry();
     setupCamera();
-    //setupRenderRays();
+    setupRenderRays();
 
     context->validate();
 

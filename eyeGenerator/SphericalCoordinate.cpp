@@ -12,7 +12,7 @@ inline float randRange(float min, float max)
 SphericalCoordinate::SphericalCoordinate(int idin)//void)
 {
   state = normalize(make_float3(randRange(-1.0f,1.0f),randRange(-1.0f,1.0f),randRange(-1.0f,1.0f)));
-  //state = make_float3(randRange(-0.5f,0.5f), 1.0f, randRange(-0.5f,0.5f));
+  //state = normalize(make_float3(randRange(-0.5f,0.5f), 1.0f, randRange(-0.5f,0.5f)));
   id = idin + 1;
   //std::cout << "Spherical Coordinate object created" << std::endl;
 }

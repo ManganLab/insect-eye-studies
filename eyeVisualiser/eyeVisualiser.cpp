@@ -36,7 +36,7 @@ using namespace optix;
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
 const char* DIRECTORY_NAME = "eyeVisualiser";
 const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
-const int OMMATIDIAL_COUNT = 500;
+const int OMMATIDIAL_COUNT = 1000;
 
 //// Global Variables
 Context      context;
