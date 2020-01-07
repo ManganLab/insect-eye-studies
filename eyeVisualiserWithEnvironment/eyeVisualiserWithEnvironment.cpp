@@ -15,6 +15,7 @@
 
 #include <sutil.h>
 #include <Arcball.h>
+#include <OptiXMesh.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -34,7 +35,7 @@ using namespace optix;
 
 //// STATIC GLOBALS
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
-const char* DIRECTORY_NAME = "eyeVisualiser";
+const char* DIRECTORY_NAME = "eyeVisualiserWithEnvironment";
 const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
 const int OMMATIDIAL_COUNT = 100;
 
@@ -45,7 +46,6 @@ uint32_t     height = 240u;
 bool         use_pbo = true;
 EyeGenerator eg(OMMATIDIAL_COUNT);
 thread* eyeGeneratorThreadPtr;
-//StaticCoordinate renderRays[OMMATIDIAL_COUNT];
 
 const char* environment_ptx;
 
@@ -73,6 +73,7 @@ void createContext();
 void createGeometry();
 void setBillboardNormalAndOrigin(Geometry& billboard, float3 normal, float3 origin);
 void setupCamera();
+void setupLights();
 //void setupRenderRays();
 
 void glutDisplay();
@@ -291,7 +292,7 @@ void glutResize( int w, int h )
     glutPostRedisplay();
 }
 
-GeometryGroup gg;
+GeometryGroup math_gg;
 Geometry line;
 Geometry ommatidialRays[OMMATIDIAL_COUNT];
 //// Geometry
@@ -308,7 +309,6 @@ void createGeometry()
   {
     ommatidialRays[i] = context->createGeometry();
     ommatidialRays[i]->setPrimitiveCount(1u);
-    //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
     ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
     ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
     ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
@@ -324,15 +324,40 @@ void createGeometry()
     gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
   }
 
-  // Assembling the geometry group
-  gg = context->createGeometryGroup();
-  gg->setChildCount(static_cast<unsigned int>(gis.size()));
+  math_gg = context->createGeometryGroup();
+  math_gg->setChildCount(static_cast<unsigned int>(gis.size()));
   for(i = 0; i<gis.size(); i++)
   {
-    gg->setChild(i, gis[i]);
+    math_gg->setChild(i, gis[i]);
   }
 
+  math_gg->setAcceleration(context->createAcceleration("Trbvh"));
+
+  // Mesh rendering
+  OptiXMesh mesh;
+  mesh.context = context;
+  mesh.use_tri_api = true;//use_tri_api;
+  mesh.ignore_mats = false;//ignore_mats;
+  std::string filename = "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
+  loadMesh( filename, mesh ); 
+  GeometryGroup tri_gg = context->createGeometryGroup();
+  tri_gg->addChild(mesh.geom_instance);
+  tri_gg->setAcceleration(context->createAcceleration("Trbvh"));
+
+  //aabb.set( mesh.bbox_min, mesh.bbox_max ); // <- This is actually a pretty clever use of a bounding box for light max/min placement and view direction calc.
+
+  // SCALE WISDOM COW.
+  Transform robotInDisguise = context->createTransform();
+  optix::Matrix4x4 matrix = optix::Matrix4x4::translate(make_float3(0.0f,0.0f,8.0f)) * optix::Matrix4x4::scale(make_float3(20.0f));
+  robotInDisguise->setMatrix(0, matrix.getData(), matrix.inverse().getData());
+  robotInDisguise->setChild(tri_gg);
+
+  // Assembling the geometry group of both into one top geometry group
+  Group gg = context->createGroup();
+  
   gg->setAcceleration(context->createAcceleration("Trbvh"));
+  gg->addChild(math_gg);
+  gg->addChild(robotInDisguise);
 
   context["top_object"]->set(gg);
   context["top_shadower"]->set(gg);
@@ -365,6 +390,36 @@ void setupCamera()
 
     camera_rotate  = Matrix4x4::identity();
 }
+void setupLights()
+{
+    //const float max_dim = fmaxf(aabb.extent(0), aabb.extent(1)); // max of x, y components
+
+    //BasicLight lights[] = {
+    //    { make_float3( -0.5f,  0.25f, -1.0f ), make_float3( 0.2f, 0.2f, 0.25f ), 0, 0 },
+    //    { make_float3( -0.5f,  0.0f ,  1.0f ), make_float3( 0.1f, 0.1f, 0.10f ), 0, 0 },
+    //    { make_float3(  0.5f,  0.5f ,  0.5f ), make_float3( 0.7f, 0.7f, 0.65f ), 1, 0 }
+    //};
+    //lights[0].pos *= max_dim * 10.0f; 
+    //lights[1].pos *= max_dim * 10.0f; 
+    //lights[2].pos *= max_dim * 10.0f; 
+
+    //Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
+    //light_buffer->setFormat( RT_FORMAT_USER );
+    //light_buffer->setElementSize( sizeof( BasicLight ) );
+    //light_buffer->setSize( sizeof(lights)/sizeof(lights[0]) );
+    //memcpy(light_buffer->map(), lights, sizeof(lights));
+    //light_buffer->unmap();
+
+    //context[ "lights" ]->set( light_buffer );
+
+    // No lights
+    Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
+    light_buffer->setFormat( RT_FORMAT_USER );
+    light_buffer->setElementSize( 32);
+    light_buffer->setSize(0);
+
+    context[ "lights" ]->set( light_buffer );
+}
 
 void updateOmmatidialRays()
 {
@@ -381,7 +436,7 @@ void updateCameraRender()
 {
   //line["direction"]->setFloat(normalize(make_float3(cos(count),1.0f,sin(count))));
   //count += 0.01f;
-  gg->getAcceleration()->markDirty();
+  math_gg->getAcceleration()->markDirty();
 
   const float vfov = 60.0f;
   const float aspect_ratio = static_cast<float>(width) /
@@ -448,6 +503,7 @@ int main(int argc, char** argv)
     createGeometry();
     setupCamera();
     //setupRenderRays();
+    setupLights();
 
     context->validate();
 

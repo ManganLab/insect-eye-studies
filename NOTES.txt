@@ -1,0 +1,5 @@
+- `optixGeometryTriangles` has an example of setting attributes that seems to set the shading normal and texcoord for all triangle-based meshes. These can be seen in the `triangle_attributes()` shader program.
+- It also seems to have an  example of mixing triangle-based objects with mathematically-defined dobjects in the .cpp file.
+  - in the `setupScene` function.
+
+
