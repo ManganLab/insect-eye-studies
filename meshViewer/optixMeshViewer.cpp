@@ -60,6 +60,7 @@
 using namespace optix;
 
 const char* const SAMPLE_NAME = "meshViewer";
+const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
 
 //------------------------------------------------------------------------------
 //
@@ -202,6 +203,25 @@ void loadMesh( const std::string& filename )
     mesh.context = context;
     mesh.use_tri_api = use_tri_api;
     mesh.ignore_mats = ignore_mats;
+
+    Material matl = context->createMaterial();
+    const char* meshShadersPTX = sutil::getPtxString( PRIMITIVES_DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
+    //Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+    //matl->setClosestHitProgram(0, cow_ch);
+    //matl["ambient_illumination"]->setFloat(make_float3(0.0f));
+    //matl["base_color"] -> setFloat(make_float3(0.2f, 0.9f, 0.2f));
+    //matl["sun_color"] -> setFloat(make_float3(1.0f));
+    //matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+
+    Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_texture");
+    matl->setClosestHitProgram(0, cow_ch);
+    matl["ambient_illumination"]->setFloat(make_float3(0.0f));
+    matl["sun_color"] -> setFloat(make_float3(1.0f));
+    matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+    matl["Kd_map"] -> setTextureSampler(sutil::loadTexture(context, "../data/cube.ppm", optix::make_float3(0.0f)));
+
+
+    mesh.material = matl;
     loadMesh( filename, mesh ); 
 
     aabb.set( mesh.bbox_min, mesh.bbox_max );
