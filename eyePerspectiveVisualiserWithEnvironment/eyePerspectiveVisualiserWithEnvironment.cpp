@@ -15,6 +15,7 @@
 
 #include <sutil.h>
 #include <Arcball.h>
+#include <OptiXMesh.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -34,9 +35,9 @@ using namespace optix;
 
 //// STATIC GLOBALS
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
-const char* DIRECTORY_NAME = "eyeVisualiser";
+const char* DIRECTORY_NAME = "eyePerspectiveVisualiserWithEnvironment";
 const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
-const int OMMATIDIAL_COUNT = 1000;
+const int OMMATIDIAL_COUNT = 1000;//38;//1000;
 
 //// Global Variables
 Context      context;
@@ -45,9 +46,11 @@ uint32_t     height = 240u;
 bool         use_pbo = true;
 EyeGenerator eg(OMMATIDIAL_COUNT);
 thread* eyeGeneratorThreadPtr;
-//StaticCoordinate renderRays[OMMATIDIAL_COUNT];
 
 const char* environment_ptx;
+
+//// Boot Variables
+bool renderEnv = true;
 
 // Camera state
 float3       camera_up;
@@ -73,7 +76,8 @@ void createContext();
 void createGeometry();
 void setBillboardNormalAndOrigin(Geometry& billboard, float3 normal, float3 origin);
 void setupCamera();
-//void setupRenderRays();
+void setupLights(); // TODO: Remove this/do something else with the lights.
+void setupRenderRays();
 
 void glutDisplay();
 void glutKeyboardPress( unsigned char k, int x, int y );
@@ -127,9 +131,10 @@ void createContext()
 
 
     // Ray generation program
-    std::string camera_name = "pinhole_camera";
+    std::string camera_name = "ommatidial_camera";
     Program ray_gen_program = context->createProgramFromPTXString( environment_ptx, camera_name );
     context->setRayGenerationProgram( 0, ray_gen_program );
+    ray_gen_program["renderPosition"]->setFloat(make_float3(0.0f));
 
     // Exception program
     Program exception_program = context->createProgramFromPTXString( environment_ptx, "exception" );
@@ -137,8 +142,18 @@ void createContext()
     context["bad_color"]->setFloat(DEFAULT_ERROR_COLOUR);
 
     // Miss program
-    context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss" ) );
-    context["bg_color"]->setFloat( make_float3(1.0f));// Make the background white
+    if(renderEnv)
+    {
+      context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss_env" ) );
+      const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
+      const float3 default_color = make_float3(0.0f, 1.0f, 1.0f);
+      context["envmap"]->setTextureSampler( sutil::loadTexture( context, texpath, default_color) );
+    }else{
+      context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss" ) );
+      const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
+      const float3 color = make_float3(1.0f, 1.0f, 1.0f);
+      context["bg_color"]->setFloat( color);
+    }
 }
 
 void destroyContext()
@@ -291,51 +306,57 @@ void glutResize( int w, int h )
     glutPostRedisplay();
 }
 
-GeometryGroup gg;
-Geometry line;
-Geometry ommatidialRays[OMMATIDIAL_COUNT];
 //// Geometry
 void createGeometry()
 {
-  int i;
-  // Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
-  std::vector<GeometryInstance> gis;
+  //int i;
+  //// Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
+  //std::vector<GeometryInstance> gis;
 
-  const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
+  //// Assembling the geometry group
+  //gg = context->createGeometryGroup();
+  //gg->setChildCount(static_cast<unsigned int>(gis.size()));
+  //for(i = 0; i<gis.size(); i++)
+  //{
+  //  gg->setChild(i, gis[i]);
+  //}
 
-  // Ommatidial rays
-  for(i = 0; i<OMMATIDIAL_COUNT; i++)
-  {
-    ommatidialRays[i] = context->createGeometry();
-    ommatidialRays[i]->setPrimitiveCount(1u);
-    //ptx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
-    ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
-    ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
-    ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
-    ommatidialRays[i]["direction"]->setFloat(normalize(make_float3(0.0f,0.0f,1.0f)));
-    ommatidialRays[i]["cylinderLength"]->setFloat(0.5f);
-    ommatidialRays[i]["radius"]->setFloat(0.01f);
+  //// Mesh rendering
+  OptiXMesh mesh;
+  mesh.context = context;
+  mesh.use_tri_api = true;//use_tri_api;
+  mesh.ignore_mats = false;//ignore_mats;
 
-    Material ray_matl = context->createMaterial();
-    Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
-    ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
-    ray_matl["ambient_light_color"]->setFloat(make_float3(0.0f));
+  // Material configuration
+  Material cow_matl = context->createMaterial();
+  const char* meshShadersPTX = sutil::getPtxString( DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
+  Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+  cow_matl->setClosestHitProgram(0, cow_ch);
+  cow_matl["ambient_illumination"]->setFloat(make_float3(0.01f));
+  cow_matl["base_color"] -> setFloat(make_float3(0.9f, 0.9f, 0.9f));
+  cow_matl["sun_color"] -> setFloat(make_float3(1.0f));
+  cow_matl["sun_direction"] -> setFloat(make_float3(0.0f, 1.0f, 0.0f));
+  mesh.material = cow_matl;
 
-    gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
-  }
+  std::string filename = "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
+  loadMesh( filename, mesh ); 
+  GeometryGroup tri_gg = context->createGeometryGroup();
+  tri_gg->addChild(mesh.geom_instance);
+  tri_gg->setAcceleration(context->createAcceleration("Trbvh"));
 
-  // Assembling the geometry group
-  gg = context->createGeometryGroup();
-  gg->setChildCount(static_cast<unsigned int>(gis.size()));
-  for(i = 0; i<gis.size(); i++)
-  {
-    gg->setChild(i, gis[i]);
-  }
+  // SCALE WISDOM COW.
+  Transform robotInDisguise = context->createTransform();
+  optix::Matrix4x4 matrix = optix::Matrix4x4::translate(make_float3(0.0f,-0.5f,1.0f)) * optix::Matrix4x4::scale(make_float3(20.0f));
+  robotInDisguise->setMatrix(0, matrix.getData(), matrix.inverse().getData());
+  robotInDisguise->setChild(tri_gg);
 
-  gg->setAcceleration(context->createAcceleration("Trbvh"));
+  // Assembling the top group.
+  Group topGroup = context->createGroup();
+  topGroup->setAcceleration(context->createAcceleration("Trbvh"));
+  topGroup->addChild(robotInDisguise);
 
-  context["top_object"]->set(gg);
-  context["top_shadower"]->set(gg);
+  context["top_object"]->set(topGroup);
+  context["top_shadower"]->set(topGroup);
 }
 
 // The below functions, as well as the relevant cuda code should be separated out, as the eye generator has.
@@ -365,23 +386,45 @@ void setupCamera()
 
     camera_rotate  = Matrix4x4::identity();
 }
+void setupLights()
+{
+    // No lights
+    Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
+    light_buffer->setFormat( RT_FORMAT_USER );
+    light_buffer->setElementSize( 32);
+    light_buffer->setSize(0);
 
+    context[ "lights" ]->set( light_buffer );
+}
+
+Buffer ommatidialBuffer;
+float3 sphericalPositions[OMMATIDIAL_COUNT];
 void updateOmmatidialRays()
 {
-  StaticCoordinate sc;
+  // This bit is for the visualiser, not the perspecetive visualiser.
+  //StaticCoordinate sc;
+  //for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+  //{
+  //  sc = eg.getCoordinateInfo(i);
+  //  ommatidialRays[i]["direction"]->setFloat(sc.direction);
+  //  ommatidialRays[i]["origin"]->setFloat(sc.position);
+  //}
+
+  // This bit is for the perspectiv visualiser.
+  Buffer b = context["ommatidia"]->getBuffer();
+
+  float3 newdata[OMMATIDIAL_COUNT];
   for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-  {
-    sc = eg.getCoordinateInfo(i);
-    ommatidialRays[i]["direction"]->setFloat(sc.direction);
-    ommatidialRays[i]["origin"]->setFloat(sc.position);
-  }
+    newdata[i] = eg.getCoordinateInfo(i).direction;
+
+  b->setFormat(RT_FORMAT_USER);
+  memcpy(b->map(), newdata, sizeof(newdata));
+  b->unmap();
 }
 //float count = 0.0f;
 void updateCameraRender()
 {
-  //line["direction"]->setFloat(normalize(make_float3(cos(count),1.0f,sin(count))));
-  //count += 0.01f;
-  gg->getAcceleration()->markDirty();
+  //gg->getAcceleration()->markDirty();
 
   const float vfov = 60.0f;
   const float aspect_ratio = static_cast<float>(width) /
@@ -417,17 +460,41 @@ void updateCameraRender()
   context["W"  ]->setFloat( camera_w );
 }
 
+void setupRenderRays()
+{
+  StaticCoordinate sc;
+  for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+  {
+    sc = eg.getCoordinateInfo(i);
+    sphericalPositions[i] = sc.direction;
+  }
+
+  Buffer ommatidialBuffer;
+  ommatidialBuffer = context->createBuffer(RT_BUFFER_INPUT);
+  ommatidialBuffer->setFormat(RT_FORMAT_USER);
+  ommatidialBuffer->setElementSize(sizeof(float3));
+  ommatidialBuffer->setSize(sizeof(sphericalPositions)/sizeof(sphericalPositions[0]));
+  memcpy(ommatidialBuffer->map(), sphericalPositions, sizeof(sphericalPositions));
+  ommatidialBuffer->unmap();
+
+  context["ommatidia"]->set(ommatidialBuffer);
+}
+
 int main(int argc, char** argv)
 {
-  //SphericalCoordinate* sc = new SphericalCoordinate(1);
-  //SphericalCoordinate sc(4);
-  //cout << "hi, world." << endl;
-  //cout << sc.getId() << endl;
+  // Process arguments
+  for(int i=1; i<argc; i++)
+  {
+    const std::string arg(argv[i]);
+    if(arg == "-nobg")
+      renderEnv = false;
+  }
 
+  // Run the code
   srand(42);
   eg.generateSphericalCoordinates();
   eg.stepSize = 0.001f;
-  //eg.coordinateProximityCount = 3;
+  eg.coordinateProximityCount = 10;
 
   cout << "Starting thread...";
   //thread eyeGeneratorThread(EyeGenerator::basicIterator, &eg);
@@ -447,7 +514,8 @@ int main(int argc, char** argv)
     createContext();
     createGeometry();
     setupCamera();
-    //setupRenderRays();
+    setupLights();
+    setupRenderRays();
 
     context->validate();
 

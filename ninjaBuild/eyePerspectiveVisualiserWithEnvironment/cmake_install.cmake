@@ -1,4 +1,4 @@
-# Install script for directory: /home/blayze/Software/Optix-6.0.0/studies/eyePerspectiveVisualiser
+# Install script for directory: /home/blayze/Software/Optix-6.0.0/studies/eyePerspectiveVisualiserWithEnvironment
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

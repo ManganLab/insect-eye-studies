@@ -12,7 +12,7 @@ inline float randRange(float min, float max)
 SphericalCoordinate::SphericalCoordinate(int idin)//void)
 {
   state = normalize(make_float3(randRange(-1.0f,1.0f),randRange(-1.0f,1.0f),randRange(-1.0f,1.0f)));
-  //state = normalize(make_float3(randRange(-0.5f,0.5f), 1.0f, randRange(-0.5f,0.5f)));
+  //state = normalize(make_float3(randRange(-1.5f,0.5f), 1.0f, randRange(-1.5f,0.5f)));
   id = idin + 1;
   //std::cout << "Spherical Coordinate object created" << std::endl;
 }
@@ -138,8 +138,12 @@ float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, i
     if(sc == this)
       continue; // Skip comparing with itself
 
-    // Claculate the distance to each of them
+    // Claculate the energyDistance to each of them
     float energyDistance = 1.0f/this->getFastDistanceTo(sc);// The denominator could be raised to a power (but is not here)
+    
+    // Generate a nonuniform distribution (Ha! The irony!)
+    //float energyOffset = abs(dot(normalize(make_float3(sc->state.x, 0.0f, sc->state.z)), sc->state));
+    //energyDistance /= 10.0f*energyOffset*energyOffset*energyOffset;
 
     if(energyDistance > nClosest[proximity-1])// If it's got a higher energy than the lowest-energy closest coordinate
     {

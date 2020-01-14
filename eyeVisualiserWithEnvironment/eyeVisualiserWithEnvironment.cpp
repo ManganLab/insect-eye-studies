@@ -37,7 +37,7 @@ using namespace optix;
 const float3 DEFAULT_ERROR_COLOUR = make_float3(1.0f, 0.0f, 0.0f);
 const char* DIRECTORY_NAME = "eyeVisualiserWithEnvironment";
 const char* PRIMITIVES_DIRECTORY_NAME = "commonPrimitives";
-const int OMMATIDIAL_COUNT = 100;
+const int OMMATIDIAL_COUNT = 1000;
 
 //// Global Variables
 Context      context;
@@ -319,7 +319,7 @@ void createGeometry()
     Material ray_matl = context->createMaterial();
     Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
     ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
-    ray_matl["ambient_light_color"]->setFloat(make_float3(0.0f));
+    ray_matl["ambient_light_color"]->setFloat(make_float3(1.0f));
 
     gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
   }
@@ -333,11 +333,29 @@ void createGeometry()
 
   math_gg->setAcceleration(context->createAcceleration("Trbvh"));
 
-  // Mesh rendering
+  //// Mesh rendering
   OptiXMesh mesh;
   mesh.context = context;
   mesh.use_tri_api = true;//use_tri_api;
   mesh.ignore_mats = false;//ignore_mats;
+
+  // Material configuration
+  //Material cow_matl = context->createMaterial();
+  //Program cow_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
+  //cow_matl->setClosestHitProgram(0, cow_ch);
+  //cow_matl["ambient_light_color"]->setFloat(make_float3(0.0f, 1.0f, 0.0f));
+  //mesh.material = cow_matl;
+
+  Material cow_matl = context->createMaterial();
+  const char* meshShadersPTX = sutil::getPtxString( DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
+  Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+  cow_matl->setClosestHitProgram(0, cow_ch);
+  cow_matl["ambient_illumination"]->setFloat(make_float3(0.01f));
+  cow_matl["base_color"] -> setFloat(make_float3(0.9f, 0.9f, 0.9f));
+  cow_matl["sun_color"] -> setFloat(make_float3(1.0f));
+  cow_matl["sun_direction"] -> setFloat(make_float3(0.0f, 1.0f, 0.0f));
+  mesh.material = cow_matl;
+
   std::string filename = "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
   loadMesh( filename, mesh ); 
   GeometryGroup tri_gg = context->createGeometryGroup();
@@ -431,11 +449,8 @@ void updateOmmatidialRays()
     ommatidialRays[i]["origin"]->setFloat(sc.position);
   }
 }
-//float count = 0.0f;
 void updateCameraRender()
 {
-  //line["direction"]->setFloat(normalize(make_float3(cos(count),1.0f,sin(count))));
-  //count += 0.01f;
   math_gg->getAcceleration()->markDirty();
 
   const float vfov = 60.0f;
@@ -474,11 +489,6 @@ void updateCameraRender()
 
 int main(int argc, char** argv)
 {
-  //SphericalCoordinate* sc = new SphericalCoordinate(1);
-  //SphericalCoordinate sc(4);
-  //cout << "hi, world." << endl;
-  //cout << sc.getId() << endl;
-
   srand(42);
   eg.generateSphericalCoordinates();
   eg.stepSize = 0.001f;
@@ -503,7 +513,7 @@ int main(int argc, char** argv)
     createGeometry();
     setupCamera();
     //setupRenderRays();
-    setupLights();
+    //setupLights();
 
     context->validate();
 

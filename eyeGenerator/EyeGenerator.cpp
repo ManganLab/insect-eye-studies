@@ -1,5 +1,3 @@
-//using namespace optix;
-
 #include <cstdlib>
 #include <cstring>
 #include <iostream>

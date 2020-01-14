@@ -360,6 +360,7 @@ add_subdirectory(eyeGenerator)
 add_subdirectory(eyeVisualiser)
 add_subdirectory(eyeVisualiserWithEnvironment)
 add_subdirectory(eyePerspectiveVisualiser)
+add_subdirectory(eyePerspectiveVisualiserWithEnvironment)
 add_subdirectory(meshViewer)
 
 # Our sutil library.  The rules to build it are found in the subdirectory.

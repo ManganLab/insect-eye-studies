@@ -44,6 +44,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiserWithEnvironment/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiser/cmake_install.cmake")
+  include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiserWithEnvironment/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/meshViewer/cmake_install.cmake")
   include("/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/sutil/cmake_install.cmake")
 
