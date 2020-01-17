@@ -27,6 +27,7 @@ EyeGenerator::EyeGenerator(int coordinateCount)
     exit(0);
   }
   stopFlag = false;
+  newDataReadyFlag = false;
   stepSize = 5.0f;
   coordinateProximityCount = 10;
 }
@@ -43,6 +44,7 @@ void EyeGenerator::generateSphericalCoordinates()
     NonPlanarCoordinate* sc = new SphericalCoordinate(i);
     coordinates[i] = sc;
   }
+  newDataReadyFlag = true;
 }
 void EyeGenerator::test()
 {
@@ -99,10 +101,20 @@ void EyeGenerator::rieszSEnergyIterator(EyeGenerator* eg)
 
     std::cout << "  Average Energy: " << avgEnergy << std::endl;
     std::cout << "  Variance      : " << energyVar << std::endl;
+    eg->newDataReadyFlag = true;
   }while(/*variance > 0.00001 &&*/ iteration < 10000 && !eg->stopFlag);
 
   // Some more line stuff:
   std::cout << "[3B";
+}
+bool EyeGenerator::isNewDataReady()
+{
+  if(newDataReadyFlag)
+  {
+    newDataReadyFlag = false;
+    return true;
+  }
+  return false;
 }
 void EyeGenerator::basicIterator(EyeGenerator* eg)
 {

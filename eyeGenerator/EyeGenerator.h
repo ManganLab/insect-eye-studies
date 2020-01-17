@@ -18,6 +18,7 @@ class EyeGenerator {
     void test();
     StaticCoordinate getCoordinateInfo(int i);
     void stop();
+    bool isNewDataReady();
 
     float stepSize;
     float coordinateProximityCount;
@@ -25,6 +26,7 @@ class EyeGenerator {
   private:
     NonPlanarCoordinate** coordinates;
     bool stopFlag;
+    bool newDataReadyFlag;
     
 };
 

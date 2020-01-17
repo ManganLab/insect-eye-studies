@@ -293,7 +293,6 @@ void glutResize( int w, int h )
 }
 
 GeometryGroup math_gg;
-Geometry line;
 Geometry ommatidialRays[OMMATIDIAL_COUNT];
 //// Geometry
 void createGeometry()

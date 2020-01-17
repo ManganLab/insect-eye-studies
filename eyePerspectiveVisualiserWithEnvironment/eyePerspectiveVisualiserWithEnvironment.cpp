@@ -50,7 +50,12 @@ thread* eyeGeneratorThreadPtr;
 const char* environment_ptx;
 
 //// Boot Variables
-bool renderEnv = true;
+bool with_sky = false;
+int mode = 0; // 0 renders the perspective, 1 renders the ommatidia
+std::string mesh_file = "";
+std::string texture_file = "";
+float3 mesh_position = make_float3(0.0f);
+float3 mesh_rotation = make_float3(0.0f);
 
 // Camera state
 float3       camera_up;
@@ -132,6 +137,8 @@ void createContext()
 
     // Ray generation program
     std::string camera_name = "ommatidial_camera";
+    if(mode == 1)
+      camera_name = "pinhole_camera";
     Program ray_gen_program = context->createProgramFromPTXString( environment_ptx, camera_name );
     context->setRayGenerationProgram( 0, ray_gen_program );
     ray_gen_program["renderPosition"]->setFloat(make_float3(0.0f));
@@ -142,17 +149,25 @@ void createContext()
     context["bad_color"]->setFloat(DEFAULT_ERROR_COLOUR);
 
     // Miss program
-    if(renderEnv)
+    //if(renderEnv && mode == 0)
+    //{
+    //  context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss_env" ) );
+    //  const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
+    //  const float3 default_color = make_float3(0.0f, 1.0f, 1.0f);
+    //  context["envmap"]->setTextureSampler( sutil::loadTexture( context, texpath, default_color) );
+    //}else{
+    //  context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss" ) );
+    //  const float3 color = make_float3(1.0f, 1.0f, 1.0f);
+    //  context["bg_color"]->setFloat( color);
+    //}
+
+    if(with_sky)
     {
-      context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss_env" ) );
-      const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
-      const float3 default_color = make_float3(0.0f, 1.0f, 1.0f);
-      context["envmap"]->setTextureSampler( sutil::loadTexture( context, texpath, default_color) );
+      context->setMissProgram(0, context->createProgramFromPTXString(environment_ptx, "miss_sky"));
+      // TODO: ...maybe here the sun position should be fed in, eh? Eh?
     }else{
       context->setMissProgram( 0, context->createProgramFromPTXString( environment_ptx, "miss" ) );
-      const std::string texpath = "/home/blayze/Software/Optix-6.0.0/studies/data/environment.hdr";
-      const float3 color = make_float3(1.0f, 1.0f, 1.0f);
-      context["bg_color"]->setFloat( color);
+      context["bg_color"]->setFloat( make_float3(1.0f));
     }
 }
 
@@ -307,56 +322,147 @@ void glutResize( int w, int h )
 }
 
 //// Geometry
+GeometryGroup math_gg;
+Geometry ommatidialRays[OMMATIDIAL_COUNT];
 void createGeometry()
 {
-  //int i;
-  //// Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
-  //std::vector<GeometryInstance> gis;
+  int i;
+  // Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
+  std::vector<GeometryInstance> gis;
 
-  //// Assembling the geometry group
-  //gg = context->createGeometryGroup();
-  //gg->setChildCount(static_cast<unsigned int>(gis.size()));
-  //for(i = 0; i<gis.size(); i++)
-  //{
-  //  gg->setChild(i, gis[i]);
-  //}
+  if(mode == 1)
+  {
+    const char *cylinderPtx = sutil::getPtxString(PRIMITIVES_DIRECTORY_NAME, "cylinder.cu");
+
+    // Ommatidial rays
+    for(i = 0; i<OMMATIDIAL_COUNT; i++)
+    {
+      ommatidialRays[i] = context->createGeometry();
+      ommatidialRays[i]->setPrimitiveCount(1u);
+      ommatidialRays[i]->setBoundingBoxProgram(context->createProgramFromPTXString(cylinderPtx, "bounds"));
+      ommatidialRays[i]->setIntersectionProgram(context->createProgramFromPTXString(cylinderPtx, "intersect"));
+      ommatidialRays[i]["origin"]->setFloat(make_float3(0.0f,0.0f,0.0f));
+      ommatidialRays[i]["direction"]->setFloat(normalize(make_float3(0.0f,0.0f,1.0f)));
+      ommatidialRays[i]["cylinderLength"]->setFloat(0.5f);
+      ommatidialRays[i]["radius"]->setFloat(0.01f);
+
+      Material ray_matl = context->createMaterial();
+      Program ommatidial_ray_ch = context->createProgramFromPTXString(environment_ptx, "solid_color");
+      ray_matl->setClosestHitProgram(0, ommatidial_ray_ch);
+      ray_matl["ambient_light_color"]->setFloat(make_float3(0.0f));
+
+      gis.push_back(context->createGeometryInstance(ommatidialRays[i], &ray_matl, &ray_matl+1));
+    }
+  }
+
+  math_gg = context->createGeometryGroup();
+  math_gg->setChildCount(static_cast<unsigned int>(gis.size()));
+  for(i = 0; i<gis.size(); i++)
+  {
+    math_gg->setChild(i, gis[i]);
+  }
+
+  math_gg->setAcceleration(context->createAcceleration("Trbvh"));
 
   //// Mesh rendering
   OptiXMesh mesh;
   mesh.context = context;
-  mesh.use_tri_api = true;//use_tri_api;
-  mesh.ignore_mats = false;//ignore_mats;
+  mesh.use_tri_api = true;
+  mesh.ignore_mats = false;
 
-  // Material configuration
-  Material cow_matl = context->createMaterial();
-  const char* meshShadersPTX = sutil::getPtxString( DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
-  Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
-  cow_matl->setClosestHitProgram(0, cow_ch);
-  cow_matl["ambient_illumination"]->setFloat(make_float3(0.01f));
-  cow_matl["base_color"] -> setFloat(make_float3(0.9f, 0.9f, 0.9f));
-  cow_matl["sun_color"] -> setFloat(make_float3(1.0f));
-  cow_matl["sun_direction"] -> setFloat(make_float3(0.0f, 1.0f, 0.0f));
-  mesh.material = cow_matl;
+  Material matl = context->createMaterial();
+  const char* meshShadersPTX = sutil::getPtxString( PRIMITIVES_DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
 
-  std::string filename = "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
+  if(texture_file == "")
+  {
+    Program mesh_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+    matl->setClosestHitProgram(0, mesh_ch);
+    matl["ambient_illumination"]->setFloat(make_float3(0.2f));
+    matl["base_color"] -> setFloat(make_float3(0.2f, 0.9f, 0.2f));
+    matl["sun_color"] -> setFloat(make_float3(1.0f));
+    matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+  }else{
+    Program mesh_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_texture");
+    matl->setClosestHitProgram(0, mesh_ch);
+    matl["ambient_illumination"]->setFloat(make_float3(0.2f));
+    matl["sun_color"] -> setFloat(make_float3(2.0f));
+    matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+    matl["Kd_map"] -> setTextureSampler(sutil::loadTexture(context, texture_file, optix::make_float3(0.0f)));
+  }
+  mesh.material = matl;
+
+  std::string filename = mesh_file != "" ? mesh_file : "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
   loadMesh( filename, mesh ); 
   GeometryGroup tri_gg = context->createGeometryGroup();
   tri_gg->addChild(mesh.geom_instance);
   tri_gg->setAcceleration(context->createAcceleration("Trbvh"));
 
+
   // SCALE WISDOM COW.
   Transform robotInDisguise = context->createTransform();
-  optix::Matrix4x4 matrix = optix::Matrix4x4::translate(make_float3(0.0f,-0.5f,1.0f)) * optix::Matrix4x4::scale(make_float3(20.0f));
+  optix::Matrix4x4 matrix = optix::Matrix4x4::translate(mesh_position) * optix::Matrix4x4::rotate(mesh_rotation.x /180.0 * 3.141592653, make_float3(1.0f, 0.0f, 0.0f)) 
+                                                                       * optix::Matrix4x4::rotate(mesh_rotation.y /180.0 * 3.141592653, make_float3(0.0f, 1.0f, 0.0f))
+                                                                       * optix::Matrix4x4::rotate(mesh_rotation.z /180.0 * 3.141592653, make_float3(0.0f, 0.0f, 1.0f));
   robotInDisguise->setMatrix(0, matrix.getData(), matrix.inverse().getData());
   robotInDisguise->setChild(tri_gg);
 
-  // Assembling the top group.
-  Group topGroup = context->createGroup();
-  topGroup->setAcceleration(context->createAcceleration("Trbvh"));
-  topGroup->addChild(robotInDisguise);
+  // Assembling the geometry group of both into one top geometry group
+  Group gg = context->createGroup();
+  
+  gg->setAcceleration(context->createAcceleration("Trbvh"));
+  gg->addChild(math_gg);
+  gg->addChild(robotInDisguise);
 
-  context["top_object"]->set(topGroup);
-  context["top_shadower"]->set(topGroup);
+  context["top_object"]->set(gg);
+  context["top_shadower"]->set(gg);
+  ////int i;
+  ////// Create Geom Instances for each piece of geometry (Note: This might need to be made global for the the ommatidial bits)
+  ////std::vector<GeometryInstance> gis;
+
+  ////// Assembling the geometry group
+  ////gg = context->createGeometryGroup();
+  ////gg->setChildCount(static_cast<unsigned int>(gis.size()));
+  ////for(i = 0; i<gis.size(); i++)
+  ////{
+  ////  gg->setChild(i, gis[i]);
+  ////}
+
+  ////// Mesh rendering
+  //OptiXMesh mesh;
+  //mesh.context = context;
+  //mesh.use_tri_api = true;//use_tri_api;
+  //mesh.ignore_mats = false;//ignore_mats;
+
+  //// Material configuration
+  //Material cow_matl = context->createMaterial();
+  //const char* meshShadersPTX = sutil::getPtxString( DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
+  //Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+  //cow_matl->setClosestHitProgram(0, cow_ch);
+  //cow_matl["ambient_illumination"]->setFloat(make_float3(0.01f));
+  //cow_matl["base_color"] -> setFloat(make_float3(0.9f, 0.9f, 0.9f));
+  //cow_matl["sun_color"] -> setFloat(make_float3(1.0f));
+  //cow_matl["sun_direction"] -> setFloat(make_float3(0.0f, 1.0f, 0.0f));
+  //mesh.material = cow_matl;
+
+  //std::string filename = "/home/blayze/Software/Optix-6.0.0/studies/data/cow.obj";
+  //loadMesh( filename, mesh ); 
+  //GeometryGroup tri_gg = context->createGeometryGroup();
+  //tri_gg->addChild(mesh.geom_instance);
+  //tri_gg->setAcceleration(context->createAcceleration("Trbvh"));
+
+  //// SCALE WISDOM COW.
+  //Transform robotInDisguise = context->createTransform();
+  //optix::Matrix4x4 matrix = optix::Matrix4x4::translate(make_float3(0.0f,-0.5f,1.0f)) * optix::Matrix4x4::scale(make_float3(20.0f));
+  //robotInDisguise->setMatrix(0, matrix.getData(), matrix.inverse().getData());
+  //robotInDisguise->setChild(tri_gg);
+
+  //// Assembling the top group.
+  //Group topGroup = context->createGroup();
+  //topGroup->setAcceleration(context->createAcceleration("Trbvh"));
+  //topGroup->addChild(robotInDisguise);
+
+  //context["top_object"]->set(topGroup);
+  //context["top_shadower"]->set(topGroup);
 }
 
 // The below functions, as well as the relevant cuda code should be separated out, as the eye generator has.
@@ -401,30 +507,34 @@ Buffer ommatidialBuffer;
 float3 sphericalPositions[OMMATIDIAL_COUNT];
 void updateOmmatidialRays()
 {
-  // This bit is for the visualiser, not the perspecetive visualiser.
-  //StaticCoordinate sc;
-  //for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-  //{
-  //  sc = eg.getCoordinateInfo(i);
-  //  ommatidialRays[i]["direction"]->setFloat(sc.direction);
-  //  ommatidialRays[i]["origin"]->setFloat(sc.position);
-  //}
+  if(mode == 1)
+  {
+    // This bit is for the visualiser, not the perspecetive visualiser.
+    StaticCoordinate sc;
+    for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+    {
+      sc = eg.getCoordinateInfo(i);
+      ommatidialRays[i]["direction"]->setFloat(sc.direction);
+      ommatidialRays[i]["origin"]->setFloat(sc.position);
+    }
+  }else if(mode == 0){
 
-  // This bit is for the perspectiv visualiser.
-  Buffer b = context["ommatidia"]->getBuffer();
+    // This bit is for the perspectiv visualiser.
+    Buffer b = context["ommatidia"]->getBuffer();
 
-  float3 newdata[OMMATIDIAL_COUNT];
-  for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-    newdata[i] = eg.getCoordinateInfo(i).direction;
+    float3 newdata[OMMATIDIAL_COUNT];
+    for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+      newdata[i] = eg.getCoordinateInfo(i).direction;
 
-  b->setFormat(RT_FORMAT_USER);
-  memcpy(b->map(), newdata, sizeof(newdata));
-  b->unmap();
+    b->setFormat(RT_FORMAT_USER);
+    memcpy(b->map(), newdata, sizeof(newdata));
+    b->unmap();
+  }
 }
 //float count = 0.0f;
 void updateCameraRender()
 {
-  //gg->getAcceleration()->markDirty();
+  math_gg->getAcceleration()->markDirty();
 
   const float vfov = 60.0f;
   const float aspect_ratio = static_cast<float>(width) /
@@ -480,14 +590,39 @@ void setupRenderRays()
   context["ommatidia"]->set(ommatidialBuffer);
 }
 
+float3 stringToVector(const std::string input)
+{
+  float values[3];
+  int valueCounter = 0, lastIndex = 0;
+  for(int i = 0; i< input.length(); i++)
+  {
+    if(input[i] == ',')
+    {
+      values[valueCounter++] = stof(input.substr(lastIndex, i));
+      lastIndex = i+1;
+    }
+  }
+  return make_float3(values[0], values[1], values[2]);
+}
+
 int main(int argc, char** argv)
 {
   // Process arguments
   for(int i=1; i<argc; i++)
   {
     const std::string arg(argv[i]);
-    if(arg == "-nobg")
-      renderEnv = false;
+    if(arg == "-sky")
+      with_sky = true;
+    else if(arg == "-mode")
+      mode = stoi(argv[++i]);
+    else if(arg == "-m")
+      mesh_file = argv[++i];
+    else if(arg == "-mt")
+      texture_file = argv[++i];
+    else if(arg == "--mesh-position")
+      mesh_position = stringToVector(argv[++i]);
+    else if(arg == "--mesh-rotation")
+      mesh_rotation = stringToVector(argv[++i]);
   }
 
   // Run the code

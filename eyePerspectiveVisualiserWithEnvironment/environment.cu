@@ -142,6 +142,17 @@ RT_PROGRAM void miss_env()
   prd_radiance.result = make_float3(tex2D(envmap, u, v));
   //prd_radiance.result = make_float3(1.0f, 0.0f, 0.0f);
 }
+RT_PROGRAM void miss_sky()
+{
+  float theta = atan2f(ray.direction.x, ray.direction.z);
+  float phi = M_PIf * 0.5f - acosf(ray.direction.y);
+  float u = (theta + M_PIf) * (0.5f * M_1_PIf);
+  float v = 0.5f * (1.0f + sin(phi));
+
+  float3 darkBlue = make_float3(0.05f, 0.1f, 0.45f);
+  float3 lightBlue = make_float3(0.4f, 0.5f, 0.8f);
+  prd_radiance.result = v*darkBlue+(1-v)*lightBlue;
+}
 
 //
 // Terminates and fully attenuates ray after any hit

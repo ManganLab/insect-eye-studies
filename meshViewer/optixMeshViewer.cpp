@@ -100,7 +100,7 @@ Buffer getOutputBuffer();
 void destroyContext();
 void registerExitHandler();
 void createContext( int usage_report_level, UsageReportLogger* logger );
-void loadMesh( const std::string& filename );
+void loadMesh( const std::string& filename, const std::string& textureFilename );
 void setupCamera();
 void setupLights();
 void updateCamera();
@@ -197,7 +197,7 @@ void createContext( int usage_report_level, UsageReportLogger* logger )
 }
 
 
-void loadMesh( const std::string& filename )
+void loadMesh( const std::string& filename, const std::string& textureFilename)
 {
     OptiXMesh mesh;
     mesh.context = context;
@@ -206,19 +206,23 @@ void loadMesh( const std::string& filename )
 
     Material matl = context->createMaterial();
     const char* meshShadersPTX = sutil::getPtxString( PRIMITIVES_DIRECTORY_NAME, std::string("meshMaterial.cu").c_str() );
-    //Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
-    //matl->setClosestHitProgram(0, cow_ch);
-    //matl["ambient_illumination"]->setFloat(make_float3(0.0f));
-    //matl["base_color"] -> setFloat(make_float3(0.2f, 0.9f, 0.2f));
-    //matl["sun_color"] -> setFloat(make_float3(1.0f));
-    //matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
 
-    Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_texture");
-    matl->setClosestHitProgram(0, cow_ch);
-    matl["ambient_illumination"]->setFloat(make_float3(0.0f));
-    matl["sun_color"] -> setFloat(make_float3(1.0f));
-    matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
-    matl["Kd_map"] -> setTextureSampler(sutil::loadTexture(context, "../data/cube.ppm", optix::make_float3(0.0f)));
+    if(textureFilename == "")
+    {
+      Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_solid_color");
+      matl->setClosestHitProgram(0, cow_ch);
+      matl["ambient_illumination"]->setFloat(make_float3(0.0f));
+      matl["base_color"] -> setFloat(make_float3(0.2f, 0.9f, 0.2f));
+      matl["sun_color"] -> setFloat(make_float3(1.0f));
+      matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+    }else{
+      Program cow_ch = context->createProgramFromPTXString(meshShadersPTX, "basic_shaded_texture");
+      matl->setClosestHitProgram(0, cow_ch);
+      matl["ambient_illumination"]->setFloat(make_float3(0.0f));
+      matl["sun_color"] -> setFloat(make_float3(2.0f));
+      matl["sun_direction"] -> setFloat(normalize(make_float3(3.0f, 6.0f, 1.0f)));
+      matl["Kd_map"] -> setTextureSampler(sutil::loadTexture(context, textureFilename, optix::make_float3(0.0f)));
+    }
 
 
     mesh.material = matl;
@@ -243,40 +247,6 @@ void setupCamera()
     camera_up     = make_float3( 0.0f, 1.0f, 0.0f );
 
     camera_rotate  = Matrix4x4::identity();
-}
-
-
-void setupLights()
-{
-    //const float max_dim = fmaxf(aabb.extent(0), aabb.extent(1)); // max of x, y components
-
-    //BasicLight lights[] = {
-    //    { make_float3( -0.5f,  0.25f, -1.0f ), make_float3( 0.2f, 0.2f, 0.25f ), 0, 0 },
-    //    { make_float3( -0.5f,  0.0f ,  1.0f ), make_float3( 0.1f, 0.1f, 0.10f ), 0, 0 },
-    //    { make_float3(  0.5f,  0.5f ,  0.5f ), make_float3( 0.7f, 0.7f, 0.65f ), 1, 0 }
-    //};
-    //lights[0].pos *= max_dim * 10.0f; 
-    //lights[1].pos *= max_dim * 10.0f; 
-    //lights[2].pos *= max_dim * 10.0f; 
-
-    //Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
-    //light_buffer->setFormat( RT_FORMAT_USER );
-    //light_buffer->setElementSize( sizeof( BasicLight ) );
-    //light_buffer->setSize( sizeof(lights)/sizeof(lights[0]) );
-    //memcpy(light_buffer->map(), lights, sizeof(lights));
-    //light_buffer->unmap();
-
-    //context[ "lights" ]->set( light_buffer );
-
-    //BasicLight lights[] = {};
-    Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
-    light_buffer->setFormat( RT_FORMAT_USER );
-    light_buffer->setElementSize( 32);
-    light_buffer->setSize( 0);//sizeof(lights)/sizeof(lights[0]) );
-    //memcpy(light_buffer->map(), lights, sizeof(lights));
-    //light_buffer->unmap();
-
-    context[ "lights" ]->set( light_buffer );
 }
 
 
@@ -490,6 +460,7 @@ int main( int argc, char** argv )
  {
     std::string out_file;
     std::string mesh_file = std::string( sutil::samplesDir() ) + "/data/cow.obj";
+    std::string texture_file = "";
     int usage_report_level = 0;
     for( int i=1; i<argc; ++i )
     {
@@ -520,6 +491,15 @@ int main( int argc, char** argv )
                 printUsageAndExit( argv[0] );
             }
             mesh_file = argv[++i];
+        }
+        else if( arg == "-mt" || arg == "--mesh-texture" )
+        {
+            if( i == argc-1 )
+            {
+                std::cerr << "Option '" << argv[i] << "' requires additional argument.\n";
+                printUsageAndExit( argv[0] );
+            }
+            texture_file = argv[++i];
         }
         else if( arg == "-r" || arg == "--report" )
         {
@@ -555,9 +535,8 @@ int main( int argc, char** argv )
 
         UsageReportLogger logger;
         createContext( usage_report_level, &logger );
-        loadMesh( mesh_file );
+        loadMesh( mesh_file, texture_file );
         setupCamera();
-        setupLights();
 
         context->validate();
 
