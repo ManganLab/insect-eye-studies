@@ -18,7 +18,7 @@ class EyeGenerator {
     void test();
     StaticCoordinate getCoordinateInfo(int i);
     void stop();
-    bool isNewDataReady();
+    bool hasNewDataReady();
 
     float stepSize;
     float coordinateProximityCount;

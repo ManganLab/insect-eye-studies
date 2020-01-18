@@ -1,0 +1,1 @@
+ninja && ./bin/eyePerspectiveVisualiserWithEnvironment -nobg -m ../../rothamsted/rothamsted_reconstruction/flights_centered/group_centered/flight_2/Flight_2.obj -mt ../../rothamsted/rothamsted_reconstruction/flights_centered/group_centered/flight_2/Flight_2.ppm --mesh-position 70,-10,30 --mesh-rotation -90,0,0 -mode 0 -sky

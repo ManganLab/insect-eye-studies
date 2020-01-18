@@ -107,7 +107,7 @@ void EyeGenerator::rieszSEnergyIterator(EyeGenerator* eg)
   // Some more line stuff:
   std::cout << "[3B";
 }
-bool EyeGenerator::isNewDataReady()
+bool EyeGenerator::hasNewDataReady()
 {
   if(newDataReadyFlag)
   {

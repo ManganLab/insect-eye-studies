@@ -81,7 +81,6 @@ void createContext();
 void createGeometry();
 void setBillboardNormalAndOrigin(Geometry& billboard, float3 normal, float3 origin);
 void setupCamera();
-void setupLights(); // TODO: Remove this/do something else with the lights.
 void setupRenderRays();
 
 void glutDisplay();
@@ -492,43 +491,36 @@ void setupCamera()
 
     camera_rotate  = Matrix4x4::identity();
 }
-void setupLights()
-{
-    // No lights
-    Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
-    light_buffer->setFormat( RT_FORMAT_USER );
-    light_buffer->setElementSize( 32);
-    light_buffer->setSize(0);
-
-    context[ "lights" ]->set( light_buffer );
-}
 
 Buffer ommatidialBuffer;
 float3 sphericalPositions[OMMATIDIAL_COUNT];
 void updateOmmatidialRays()
 {
-  if(mode == 1)
+  if(eg.hasNewDataReady())
   {
-    // This bit is for the visualiser, not the perspecetive visualiser.
-    StaticCoordinate sc;
-    for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+    if(mode == 1)
     {
-      sc = eg.getCoordinateInfo(i);
-      ommatidialRays[i]["direction"]->setFloat(sc.direction);
-      ommatidialRays[i]["origin"]->setFloat(sc.position);
+      // This bit is for the visualiser, not the perspecetive visualiser.
+      StaticCoordinate sc;
+      for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+      {
+        sc = eg.getCoordinateInfo(i);
+        ommatidialRays[i]["direction"]->setFloat(sc.direction);
+        ommatidialRays[i]["origin"]->setFloat(sc.position);
+      }
+    }else if(mode == 0){
+
+      // This bit is for the perspectiv visualiser.
+      Buffer b = context["ommatidia"]->getBuffer();
+
+      float3 newdata[OMMATIDIAL_COUNT];
+      for(int i = 0; i<OMMATIDIAL_COUNT; i++)
+        newdata[i] = eg.getCoordinateInfo(i).direction;
+
+      b->setFormat(RT_FORMAT_USER);
+      memcpy(b->map(), newdata, sizeof(newdata));
+      b->unmap();
     }
-  }else if(mode == 0){
-
-    // This bit is for the perspectiv visualiser.
-    Buffer b = context["ommatidia"]->getBuffer();
-
-    float3 newdata[OMMATIDIAL_COUNT];
-    for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-      newdata[i] = eg.getCoordinateInfo(i).direction;
-
-    b->setFormat(RT_FORMAT_USER);
-    memcpy(b->map(), newdata, sizeof(newdata));
-    b->unmap();
   }
 }
 //float count = 0.0f;
@@ -649,7 +641,6 @@ int main(int argc, char** argv)
     createContext();
     createGeometry();
     setupCamera();
-    setupLights();
     setupRenderRays();
 
     context->validate();
