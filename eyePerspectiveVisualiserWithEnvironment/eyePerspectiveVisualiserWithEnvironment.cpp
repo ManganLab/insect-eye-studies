@@ -26,7 +26,9 @@
 #include <iostream>
 #include <thread>
 
-#include "EyeGenerator.h"
+#include "EquilibriumGenerator.h"
+#include "SinesGenerator.h"
+#include "SinewaveDropletCoordinate.h"
 
 using namespace std;
 using namespace optix;
@@ -44,7 +46,7 @@ Context      context;
 uint32_t     width  = 720u;
 uint32_t     height = 240u;
 bool         use_pbo = true;
-EyeGenerator eg(OMMATIDIAL_COUNT);
+EyeGenerator* eg;
 thread* eyeGeneratorThreadPtr;
 
 const char* environment_ptx;
@@ -172,7 +174,7 @@ void createContext()
 
 void destroyContext()
 {
-    eg.stop();
+    eg->stop();
     if(eyeGeneratorThreadPtr->joinable())
     {
       cout << ">Awaiting thread closure..." << endl;
@@ -496,7 +498,7 @@ Buffer ommatidialBuffer;
 float3 sphericalPositions[OMMATIDIAL_COUNT];
 void updateOmmatidialRays()
 {
-  if(eg.hasNewDataReady())
+  if(eg->hasNewDataReady())
   {
     if(mode == 1)
     {
@@ -504,9 +506,10 @@ void updateOmmatidialRays()
       StaticCoordinate sc;
       for(int i = 0; i<OMMATIDIAL_COUNT; i++)
       {
-        sc = eg.getCoordinateInfo(i);
+        sc = eg->getCoordinateInfo(i);
         ommatidialRays[i]["direction"]->setFloat(sc.direction);
         ommatidialRays[i]["origin"]->setFloat(sc.position);
+        //std::cout<<sc.position.x<<endl;
       }
     }else if(mode == 0){
 
@@ -515,7 +518,7 @@ void updateOmmatidialRays()
 
       float3 newdata[OMMATIDIAL_COUNT];
       for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-        newdata[i] = eg.getCoordinateInfo(i).direction;
+        newdata[i] = eg->getCoordinateInfo(i).direction;
 
       b->setFormat(RT_FORMAT_USER);
       memcpy(b->map(), newdata, sizeof(newdata));
@@ -567,7 +570,7 @@ void setupRenderRays()
   StaticCoordinate sc;
   for(int i = 0; i<OMMATIDIAL_COUNT; i++)
   {
-    sc = eg.getCoordinateInfo(i);
+    sc = eg->getCoordinateInfo(i);
     sphericalPositions[i] = sc.direction;
   }
 
@@ -615,17 +618,34 @@ int main(int argc, char** argv)
       mesh_position = stringToVector(argv[++i]);
     else if(arg == "--mesh-rotation")
       mesh_rotation = stringToVector(argv[++i]);
+    //else if(arg == "-sines")
+    //  
   }
 
   // Run the code
   srand(42);
-  eg.generateSphericalCoordinates();
-  eg.stepSize = 0.001f;
-  eg.coordinateProximityCount = 10;
+  EquilibriumGenerator eqGen(OMMATIDIAL_COUNT);
+
+  //eqGen.generateSphericalCoordinates();
+  //eqGen.stepSize = 0.001f;
+  //eqGen.coordinateProximityCount = 10;
+  ////eqGen.distributionMode = 1;
+
+  eqGen.generateSinewaveDropletCoordinates();
+  eqGen.stepSize = 0.001f;
+  eqGen.coordinateProximityCount = 10;
+  SinewaveDropletCoordinate::scale = 10.0f;
+
+  eg = (EyeGenerator*)&eqGen;
+
+
+  //SinesGenerator sGen(10);
+  //eg = (EyeGenerator*)&sGen;
+
 
   cout << "Starting thread...";
-  //thread eyeGeneratorThread(EyeGenerator::basicIterator, &eg);
-  thread eyeGeneratorThread(EyeGenerator::rieszSEnergyIterator, &eg);
+  thread eyeGeneratorThread(EquilibriumGenerator::rieszSEnergyIterator, (EquilibriumGenerator*)eg);
+  //thread eyeGeneratorThread(SinesGenerator::sinesUdulator, (SinesGenerator*)eg);
   eyeGeneratorThreadPtr = &eyeGeneratorThread;
 
   try

@@ -42,12 +42,14 @@ if(GLUT_FOUND AND OPENGL_FOUND)
   #  target_link_libraries(my_app "${CMAKE_THREAD_LIBS_INIT}")
   #endif()
 
+  # Set sources using the CMakeIncludes file that all projects use so I only have to change it once
+  set(local_eye_genereator_sources main.cpp)
+  include("CMakeIncludes.cmake")
+  add_eye_generator("." local_eye_genereator_sources)
+
   # See top level CMakeLists.txt file for documentation of OPTIX_add_sample_executable.
   OPTIX_add_sample_executable( eyeGenerator
-    EyeGenerator.cpp
-    NonPlanarCoordinate.cpp
-    SphericalCoordinate.cpp
-    main.cpp
+    ${local_eye_genereator_sources}
     )
 else()
   # GLUT or OpenGL not found

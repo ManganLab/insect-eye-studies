@@ -3,16 +3,14 @@
 
 using namespace std;
 
-// Inlines
-inline float randRange(float min, float max)
-{
-  return static_cast<float>(rand()/static_cast<float>(RAND_MAX)) * (max-min) + min;
-}
 
 SphericalCoordinate::SphericalCoordinate(int idin)//void)
 {
   state = normalize(make_float3(randRange(-1.0f,1.0f),randRange(-1.0f,1.0f),randRange(-1.0f,1.0f)));
   //state = normalize(make_float3(randRange(-1.5f,0.5f), 1.0f, randRange(-1.5f,0.5f)));
+  oldState.x = state.x;
+  oldState.y = state.y;
+  oldState.z = state.z;
   id = idin + 1;
   //std::cout << "Spherical Coordinate object created" << std::endl;
 }
@@ -75,55 +73,8 @@ void SphericalCoordinate::randomMove(float scale)
   state.z = offset.z;
 }
 
-inline float SphericalCoordinate::getClosestDistance(NonPlanarCoordinate* others[], int count)
-{
-  return (radius * getCloasestDistanceFast(others, count));
-}
-// Returns distance as an angle as it's faster, the slow version will just scale it properly.
-float SphericalCoordinate::getCloasestDistanceFast(NonPlanarCoordinate* others[], int count)
-{
-  int i,o;
-  float temp;
-  //cout << "Vector " << this->getId() << ": (" <<  this->state.x << ", " << this->state.y << ", " << this->state.z << ")" << endl;
 
-  const int CLOSEST_COUNT = 3;
-  float nClosest[CLOSEST_COUNT];
-  for(i = 0; i<CLOSEST_COUNT; i++)
-    nClosest[i] = std::numeric_limits<float>::max();
-
-  for(i = 0; i<count; i++)
-  {
-    SphericalCoordinate* sc = (SphericalCoordinate*)others[i];
-    if(sc == this)
-      continue; // Skip comparing with itself
-
-    // Claculate the distance to each of them
-    float distance = this->getFastDistanceTo(sc);
-
-    if(distance <= nClosest[CLOSEST_COUNT-1])// If it's closer than the furthest closest
-    {
-      nClosest[CLOSEST_COUNT-1] = distance;// Remove the previous furthest closest
-      // Then iterate down the array, shuffling this distance into position using an in-line sort.
-      for(o = CLOSEST_COUNT-1; o>0; o--)
-      {
-        if(nClosest[o-1] > distance)
-        {
-          temp = nClosest[o-1];
-          nClosest[o-1] = nClosest[o];
-          nClosest[o] = temp;
-        }
-      }
-    }
-  }
-
-  float sumClosestDistance = nClosest[0];
-  for(i = 1; i<CLOSEST_COUNT; i++)
-    sumClosestDistance *= nClosest[i];
-    
-  return(sumClosestDistance);
-}
-
-float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, int proximity)
+/*float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, int proximity)
 {
   int i,o;
   float temp;
@@ -166,7 +117,7 @@ float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, i
     totalEnergy += nClosest[i];
     
   return(totalEnergy);
-}
+}*/
 
 void SphericalCoordinate::backtrack()
 {
@@ -181,10 +132,15 @@ int SphericalCoordinate::getId()
   return id;
 }
 
-// Returns the distance, but not the actual distance around the sphere
-float SphericalCoordinate::getFastDistanceTo(SphericalCoordinate* other)
+// Returns the actual distance
+float SphericalCoordinate::getDistanceTo(NonPlanarCoordinate* other)
 {
-  float angularDistance = acos(dot(this->state, other->state));
+  return getFastDistanceTo(other) * SphericalCoordinate::radius;
+}
+// Returns the angular distance, but not the actual distance around the sphere (because it's faster and doesn't vary between coordinates)
+float SphericalCoordinate::getFastDistanceTo(NonPlanarCoordinate* other)
+{
+  float angularDistance = acos(dot(this->state, ((SphericalCoordinate*)other)->state));
   if(isnan(angularDistance))
     return (0.0f);// Return zero as default behaviour
   return(angularDistance);
@@ -206,4 +162,52 @@ StaticCoordinate SphericalCoordinate::getStaticCoord()
 }
 
 float SphericalCoordinate::radius = 5;
-const float3 SphericalCoordinate::VERTICAL = make_float3(0.0f, 0.0f, 1.0f);
+
+/*inline float SphericalCoordinate::getClosestDistance(NonPlanarCoordinate* others[], int count)
+{
+  return (radius * getCloasestDistanceFast(others, count));
+}
+// Returns distance as an angle as it's faster, the slow version will just scale it properly.
+float SphericalCoordinate::getClosestDistanceFast(NonPlanarCoordinate* others[], int count)
+{
+  int i,o;
+  float temp;
+  //cout << "Vector " << this->getId() << ": (" <<  this->state.x << ", " << this->state.y << ", " << this->state.z << ")" << endl;
+
+  const int CLOSEST_COUNT = 3;
+  float nClosest[CLOSEST_COUNT];
+  for(i = 0; i<CLOSEST_COUNT; i++)
+    nClosest[i] = std::numeric_limits<float>::max();
+
+  for(i = 0; i<count; i++)
+  {
+    SphericalCoordinate* sc = (SphericalCoordinate*)others[i];
+    if(sc == this)
+      continue; // Skip comparing with itself
+
+    // Claculate the distance to each of them
+    float distance = this->getFastDistanceTo(sc);
+
+    if(distance <= nClosest[CLOSEST_COUNT-1])// If it's closer than the furthest closest
+    {
+      nClosest[CLOSEST_COUNT-1] = distance;// Remove the previous furthest closest
+      // Then iterate down the array, shuffling this distance into position using an in-line sort.
+      for(o = CLOSEST_COUNT-1; o>0; o--)
+      {
+        if(nClosest[o-1] > distance)
+        {
+          temp = nClosest[o-1];
+          nClosest[o-1] = nClosest[o];
+          nClosest[o] = temp;
+        }
+      }
+    }
+  }
+
+  float sumClosestDistance = nClosest[0];
+  for(i = 1; i<CLOSEST_COUNT; i++)
+    sumClosestDistance *= nClosest[i];
+    
+  return(sumClosestDistance);
+}
+*/

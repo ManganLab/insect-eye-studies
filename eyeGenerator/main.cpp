@@ -1,4 +1,5 @@
-#include "EyeGenerator.h"
+//#include "EyeGenerator.h"
+#include "EquilibriumGenerator.h"
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -22,10 +23,11 @@ int main(int argc, char** argv)
 {
   srand(42);
 
-  EyeGenerator eg(100);
-  eg.generateSphericalCoordinates();
-  eg.stepSize = 0.01f;
+  EquilibriumGenerator eqGen(100);
+  eqGen.generateSphericalCoordinates();
+  eqGen.stepSize = 0.01f;
 
+  EyeGenerator* eg = (EyeGenerator*)&eqGen;
   cout << "Size of StaticCoordinate: " << sizeof(StaticCoordinate) << endl;
 
   //cout << "Size of BasicLight: " << sizeof(BasicLight) << endl;
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 
   cout << "Starting thread...";
   //thread testThread(EyeGenerator::basicIterator, &eg);
-  thread testThread(EyeGenerator::rieszSEnergyIterator, &eg);
+  thread testThread(EquilibriumGenerator::rieszSEnergyIterator, (EquilibriumGenerator*)eg);
   if(testThread.joinable())
     testThread.join();
   cout << "Thread joined." << endl;

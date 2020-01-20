@@ -1,33 +1,19 @@
 #ifndef EYE_GENERATOR_H
 #define EYE_GENERATOR_H
 
-//class NonPlanarCoordinate;// Forward-declare the coordinate class.
-#include "NonPlanarCoordinate.h"// Nope, actually include it for the StaticCoordinate type too.
+#include "NonPlanarCoordinate.h"// Include it for the StaticCoordinate type too.
 
 class EyeGenerator {
   public:
-    static void basicIterator(EyeGenerator* eg);
-    static void rieszSEnergyIterator(EyeGenerator* eg);
-
-    int coordinateCount;
-    
-    EyeGenerator(int coordinateCount);
-    ~EyeGenerator();
-
-    void generateSphericalCoordinates();
-    void test();
-    StaticCoordinate getCoordinateInfo(int i);
-    void stop();
-    bool hasNewDataReady();
-
-    float stepSize;
-    float coordinateProximityCount;
-  
-  private:
-    NonPlanarCoordinate** coordinates;
-    bool stopFlag;
-    bool newDataReadyFlag;
-    
+    // Constructor and destructor
+    EyeGenerator();
+    virtual ~EyeGenerator();
+    // Allows access to individual coordinate info
+    virtual StaticCoordinate getCoordinateInfo(int i) = 0;
+    // Stops all threaded action of this object
+    virtual void stop() = 0;
+    // Allows the generator to be polled to see if it's got any new data
+    virtual bool hasNewDataReady() = 0;
 };
 
 #endif

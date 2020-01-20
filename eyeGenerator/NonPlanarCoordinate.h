@@ -4,8 +4,10 @@
 #include <iostream>
 
 #include <optixu/optixu_vector_types.h>
+#include <optixu/optixpp_namespace.h>
+#include <optixu/optixu_math_stream_namespace.h>
 
-struct StaticCoordinate
+struct StaticCoordinate // This should probably include a bit for the spread function control.
 {
 #if defined(__cplusplus)
   typedef optix::float3 float3;
@@ -17,20 +19,26 @@ struct StaticCoordinate
 
 class NonPlanarCoordinate {
   public:
+
     // Constructor and destructor
     NonPlanarCoordinate();
     virtual ~NonPlanarCoordinate();
     // Takes a step in a random direction and distance (Scaled by `scale`)
     virtual void randomMove(float scale) = 0;
     // Calculates the energy (a function of how close other coordinates are to this coordinate)
-    virtual float getEnergy(NonPlanarCoordinate* others[], int count, int proximity) = 0;
-    // Returns the distance to the closest other NonPlanarCoordinate object (which usually has to be of the same class type)
-    virtual float getClosestDistance(NonPlanarCoordinate* others[], int count) = 0;
-    virtual float getCloasestDistanceFast(NonPlanarCoordinate* others[], int count) = 0;
+    virtual float getEnergy(NonPlanarCoordinate* others[], int count, int proximity);
+    // Returns the (fast) distance to the other coordinate from this one (usually other is of the same type)
+    virtual float getFastDistanceTo(NonPlanarCoordinate* other) = 0;
+    // Returns the true distance to the other coordinate (may incur additional processing steps)
+    virtual float getDistanceTo(NonPlanarCoordinate* other) = 0;
     virtual void backtrack() = 0; // Backtracks the last step
     virtual StaticCoordinate getStaticCoord() = 0; // Returns this coordinate as a static coorinate.
-  //protected:
-  //  Some internal state that tracks position
+  protected:
+    // Static functions
+    static float randRange(float min, float max);
+    static const optix::float3 VERTICAL;// = make_float(0.0f,0.0f,1.0f);
+    static const optix::float3 TRUE_VERTICAL;
+    //  Some internal state that tracks position
 };
 
 #endif

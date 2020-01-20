@@ -7,9 +7,6 @@
 #include <limits>
 #include <cmath>
 
-#include <optixu/optixpp_namespace.h>
-#include <optixu/optixu_math_stream_namespace.h>
-
 using namespace optix;
 
 class SphericalCoordinate : public NonPlanarCoordinate {
@@ -23,26 +20,24 @@ class SphericalCoordinate : public NonPlanarCoordinate {
 
     // Virtual Overriders
     void randomMove(float scale);
-    float getEnergy(NonPlanarCoordinate* others[], int count, int proximity);
-    float getClosestDistance(NonPlanarCoordinate* others[], int count);
-    float getCloasestDistanceFast(NonPlanarCoordinate* others[], int count);
+    //float getEnergy(NonPlanarCoordinate* others[], int count, int proximity);
     void backtrack();
     StaticCoordinate getStaticCoord();
+    float getFastDistanceTo(NonPlanarCoordinate* other);
+    float getDistanceTo(NonPlanarCoordinate* other);
 
     // Unique functions
     int getId();
+    //float getClosestDistance(NonPlanarCoordinate* others[], int count);
+    //float getClosestDistanceFast(NonPlanarCoordinate* others[], int count);
 
     void cloneTo(SphericalCoordinate* clone);
-    float getFastDistanceTo(SphericalCoordinate* other);
 
   private:
-    static const float3 VERTICAL;// = make_float(0.0f,0.0f,1.0f);
-
     int id;
     float3 state;// Stores the actual directional state of this object
     float3 oldState;// Stores the last directional state for backtracking
 
-    //float getDistanceTo(SphericalCoordinate* other);
     void setLatLong(float lat, float lon);
 };
 

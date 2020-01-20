@@ -6,15 +6,6 @@
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/rebuild_cache.dir
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/eyeGenerator.dir
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeGenerator/CMakeFiles/edit_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser/CMakeFiles/rebuild_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser/CMakeFiles/eyeVisualiser.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiser/CMakeFiles/edit_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiserWithEnvironment/CMakeFiles/rebuild_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiserWithEnvironment/CMakeFiles/eyeVisualiserWithEnvironment.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyeVisualiserWithEnvironment/CMakeFiles/edit_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiser/CMakeFiles/rebuild_cache.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiser/CMakeFiles/eyePerspectiveVisualiser.dir
-/home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiser/CMakeFiles/edit_cache.dir
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiserWithEnvironment/CMakeFiles/rebuild_cache.dir
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiserWithEnvironment/CMakeFiles/eyePerspectiveVisualiserWithEnvironment.dir
 /home/blayze/Software/Optix-6.0.0/studies/ninjaBuild/eyePerspectiveVisualiserWithEnvironment/CMakeFiles/edit_cache.dir
