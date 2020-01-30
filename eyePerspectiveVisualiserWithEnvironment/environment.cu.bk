@@ -58,46 +58,6 @@ RT_PROGRAM void green_camera()
   output_buffer[launch_index] = make_color(make_float3(0.0f,1.0f,0.0f));
 }
 
-rtDeclareVariable(float, distributionScale, , );
-rtBuffer<float3> ommpos; // This should all be in one solid object instead of hacked together.
-RT_PROGRAM void ommatidial_camera_plane()
-{
-  // Scale the pixel coordinate to the same scale as the ommatidial coordinates
-  size_t2 screen = output_buffer.size();
-  float2 position = (make_float2(launch_index) / make_float2(screen) - 0.5f);// * distributionScale;
-
-  // Get the closest ommatidial coordinate
-  float dx = ommatidia[0].x - position.x;
-  float dz = ommatidia[0].z - position.y;
-  float closestDistance = dx*dx+dz*dz;
-  float dist;
-  int i, closestIndex;
-  for(i = 1; i<ommatidia.size(); i++)
-  {
-    dx = ommatidia[i].x - position.x;
-    dz = ommatidia[i].z - position.y;
-    dist = dx*dx+dz*dz;
-    if(dist <closestDistance)
-    {
-      closestDistance = dist;
-      closestIndex = i;
-    }
-  }
-  float3 ommPosition = ommpos[closestIndex];
-  //optix::Ray ray(make_float3(10.0f, 1.0f, 10.0f) * (ommatidia[closestIndex]+renderPosition), make_float3(0.0f, 1.0f, 0.0f), RADIANCE_RAY_TYPE, scene_epsilon);
-  optix::Ray ray(/*make_float3(10.0f, 1.0f, 10.0f) */ (ommpos[closestIndex]+renderPosition), ommatidia[closestIndex]*-1.0f/*make_float3(0.0f, 1.0f, 0.0f)*/, RADIANCE_RAY_TYPE, scene_epsilon);
-  PerRayData_radiance prd;
-  prd.importance = 1.0f;
-  prd.depth = 0;
-
-  rtTrace(top_object, ray, prd);
-
-  output_buffer[launch_index] = make_color(prd.result);
-  //output_buffer[launch_index] = make_color(make_float3((float)closestIndex/ommatidia.size()));
-  //float2 screenVec = make_float2(screen);
-  //output_buffer[launch_index] = make_color(make_float3(position.x+0.));
-  //output_buffer[launch_index] = make_color(make_float3(0.0f));
-}
 //float radialDistancce = 
 // A camera that finds the closest ommatidium to each point as a point on a sphere and renders from it's perspective
 RT_PROGRAM void ommatidial_camera()

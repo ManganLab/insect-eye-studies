@@ -49,9 +49,6 @@ bool         use_pbo = true;
 EyeGenerator* eg;
 thread* eyeGeneratorThreadPtr;
 bool raysUpdated = false;
-bool moving = false;
-float3 camPos = make_float3(0.0f);
-const float3 movementDirection = make_float3(0.0f, 0.0f, 0.1f);
 
 const char* environment_ptx;
 
@@ -62,7 +59,6 @@ std::string mesh_file = "";
 std::string texture_file = "";
 float3 mesh_position = make_float3(0.0f);
 float3 mesh_rotation = make_float3(0.0f);
-bool sines = false;
 
 // Camera state
 float3       camera_up;
@@ -113,7 +109,6 @@ void registerExitHandler()
 #endif
 }
 
-Program ray_gen_program;// Stores the program
 void createContext()
 {
     // Set up context
@@ -146,13 +141,9 @@ void createContext()
     std::string camera_name = "ommatidial_camera";
     if(mode == 1)
       camera_name = "pinhole_camera";
-    if(sines && mode == 0)
-      camera_name = "ommatidial_camera_plane";
-    ray_gen_program = context->createProgramFromPTXString( environment_ptx, camera_name );
+    Program ray_gen_program = context->createProgramFromPTXString( environment_ptx, camera_name );
     context->setRayGenerationProgram( 0, ray_gen_program );
     ray_gen_program["renderPosition"]->setFloat(make_float3(0.0f));
-    if(sines)
-      ray_gen_program["distributionScale"]->setFloat(10.0f);
 
     // Exception program
     Program exception_program = context->createProgramFromPTXString( environment_ptx, "exception" );
@@ -524,32 +515,15 @@ void updateOmmatidialRays()
     }else if(mode == 0){
 
       // This bit is for the perspectiv visualiser.
-      Buffer b_directions = context["ommatidia"]->getBuffer();
-      Buffer b_positions;
-      if(sines)
-      {
-        b_positions = context["ommpos"]->getBuffer();
-      }
+      Buffer b = context["ommatidia"]->getBuffer();
 
       float3 newdata[OMMATIDIAL_COUNT];
-      float3 posdata[OMMATIDIAL_COUNT];
       for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-      {
-        StaticCoordinate sc = eg->getCoordinateInfo(i);
-        newdata[i] = sc.direction;
-        posdata[i] = sc.position;
-      }
+        newdata[i] = eg->getCoordinateInfo(i).direction;
 
-      b_directions->setFormat(RT_FORMAT_USER);
-      memcpy(b_directions->map(), newdata, sizeof(newdata));
-      b_directions->unmap();
-
-      if(sines)
-      {
-        b_positions->setFormat(RT_FORMAT_USER);
-        memcpy(b_positions->map(), posdata, sizeof(posdata));
-        b_positions->unmap();
-      }
+      b->setFormat(RT_FORMAT_USER);
+      memcpy(b->map(), newdata, sizeof(newdata));
+      b->unmap();
     }
     raysUpdated = true;
   }
@@ -561,14 +535,6 @@ void updateCameraRender()
   {
     math_gg->getAcceleration()->markDirty();
     raysUpdated = false;
-  }
-  if(moving)
-  {
-    // TODO: This is a horrible hack, movement needs to be put in it's own thread (same as the wave generator stuff)
-    // Ideally, there'd be some kind of stageChange/animation thread/object that'd have the correct accessors.
-    camPos += movementDirection;
-    ray_gen_program["renderPosition"]->setFloat(camPos);
-    cout<< "MOVING";
   }
 
   const float vfov = 60.0f;
@@ -623,22 +589,6 @@ void setupRenderRays()
   ommatidialBuffer->unmap();
 
   context["ommatidia"]->set(ommatidialBuffer);
-
-  float3 posdata[OMMATIDIAL_COUNT];
-  for(int i = 0; i<OMMATIDIAL_COUNT; i++)
-  {
-    StaticCoordinate sc = eg->getCoordinateInfo(i);
-    posdata[i] = sc.position;
-  }
-  Buffer ommposBuffer;
-  ommposBuffer = context->createBuffer(RT_BUFFER_INPUT);
-  ommposBuffer->setFormat(RT_FORMAT_USER);
-  ommposBuffer->setElementSize(sizeof(float3));
-  ommposBuffer->setSize(sizeof(posdata)/sizeof(posdata[0]));
-  memcpy(ommposBuffer->map(), posdata, sizeof(posdata));
-  ommposBuffer->unmap();
-
-  context["ommpos"]->set(ommposBuffer);
 }
 
 float3 stringToVector(const std::string input)
@@ -674,28 +624,23 @@ int main(int argc, char** argv)
       mesh_position = stringToVector(argv[++i]);
     else if(arg == "--mesh-rotation")
       mesh_rotation = stringToVector(argv[++i]);
-    else if(arg == "-sines")
-      sines = true;
-    else if(arg == "-move")
-      moving = true;
+    //else if(arg == "-sines")
+    //  
   }
 
   // Run the code
   srand(42);
   EquilibriumGenerator eqGen(OMMATIDIAL_COUNT);
 
-  if(sines)
-  {
-    eqGen.generateSinewaveDropletCoordinates();
-    eqGen.stepSize = 0.001f;
-    eqGen.coordinateProximityCount = 10;
-    SinewaveDropletCoordinate::scale = 10.0f;
-  }else{
-    eqGen.generateSphericalCoordinates();
-    eqGen.stepSize = 0.001f;
-    eqGen.coordinateProximityCount = 10;
-    //eqGen.distributionMode = 1;
-  }
+  //eqGen.generateSphericalCoordinates();
+  //eqGen.stepSize = 0.001f;
+  //eqGen.coordinateProximityCount = 10;
+  ////eqGen.distributionMode = 1;
+
+  eqGen.generateSinewaveDropletCoordinates();
+  eqGen.stepSize = 0.001f;
+  eqGen.coordinateProximityCount = 10;
+  SinewaveDropletCoordinate::scale = 10.0f;
 
   eg = (EyeGenerator*)&eqGen;
 

@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <stdio.h>
+#include <time.h>
+#include <chrono>
+
 #include <algorithm>
 
 #include "EquilibriumGenerator.h"
@@ -13,6 +17,7 @@
 #include "SphericalCoordinate.h"
 #include "SinewaveDropletCoordinate.h"
 
+using namespace std::chrono;
 EquilibriumGenerator::EquilibriumGenerator(int coordinateCount)
 {
   this->coordinateCount = coordinateCount;
@@ -82,6 +87,11 @@ void EquilibriumGenerator::rieszSEnergyIterator(EquilibriumGenerator* eg)
   for(i = 0; i<eg->coordinateCount; i++)
     indicies[i] = i;
 
+  typedef std::chrono::high_resolution_clock Time;
+  typedef std::chrono::milliseconds ms;
+  typedef std::chrono::duration<float> fsec;
+  auto lastTime = Time::now();
+
   // Iterate N times, morphing the positions of the coordinates...
   float currentEnergy, avgEnergy, sumEnergy, sumEnergyVar, energyVar = 1.0f;
   int currentIndex, iteration = 0;
@@ -103,12 +113,26 @@ void EquilibriumGenerator::rieszSEnergyIterator(EquilibriumGenerator* eg)
       eg->coordinates[currentIndex]->randomMove(eg->stepSize * energyVar);// Move the coordinate by a random amount (scaled by the last avg energy - which should decrease)// TODO
       if(eg->coordinates[currentIndex]->getEnergy(eg->coordinates, eg->coordinateCount, eg->coordinateProximityCount) > currentEnergy)// We want to decrease total energy.
         eg->coordinates[currentIndex]->backtrack();// Backtrack if the step was a bad one
+
     }
     avgEnergy = sumEnergy/eg->coordinateCount;
     energyVar = sumEnergyVar/eg->coordinateCount;
 
     std::cout << "  Average Energy: " << avgEnergy << std::endl;
     std::cout << "  Variance      : " << energyVar << std::endl;
+
+    auto now = Time::now();
+    fsec diff = lastTime - now;
+    ms d = std::chrono::duration_cast<ms>(diff);
+    lastTime = now;
+    //std::cout << fs.count() << "s\n";
+    //std::cout << d.count() << "ms\n";
+
+    //milliseconds now = duration_cast< milliseconds >( system_clock::now().time_since_epoch());
+    //milliseconds difference = now - lastTime;
+    //lastTime = now;
+    SinewaveDropletCoordinate::time += diff.count();
+
     eg->newDataReadyFlag = true;
   }while(/*variance > 0.00001 &&*/ iteration < 10000 && !eg->stopFlag);
 

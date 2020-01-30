@@ -10,6 +10,7 @@ using namespace optix;
 class SinewaveDropletCoordinate : public NonPlanarCoordinate {
   public:
     static float scale;
+    static float time; // in seconds, since the start.
 
     // Constructor/destructor
     SinewaveDropletCoordinate();
@@ -27,5 +28,7 @@ class SinewaveDropletCoordinate : public NonPlanarCoordinate {
     // the wae details go here.
   private:
     float2 position, oldPosition; // on a -0.5 to 0.5 grid
-    static float2 bounds; // A basic bounds vector that defines the maximum distances (is all 0.5f's)
+    float wavelength, amplitude;
+    static float2 BOUNDS; // A basic bounds vector that defines the maximum distances (is all 0.5f's)
+    static float2 ORIGIN; // An origin vector.
 };

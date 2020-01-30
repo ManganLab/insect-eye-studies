@@ -20,7 +20,7 @@ class SphericalCoordinate : public NonPlanarCoordinate {
 
     // Virtual Overriders
     void randomMove(float scale);
-    //float getEnergy(NonPlanarCoordinate* others[], int count, int proximity);
+    float getEnergy(NonPlanarCoordinate* others[], int count, int proximity);
     void backtrack();
     StaticCoordinate getStaticCoord();
     float getFastDistanceTo(NonPlanarCoordinate* other);

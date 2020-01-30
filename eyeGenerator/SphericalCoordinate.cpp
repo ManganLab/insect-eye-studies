@@ -74,7 +74,7 @@ void SphericalCoordinate::randomMove(float scale)
 }
 
 
-/*float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, int proximity)
+float SphericalCoordinate::getEnergy(NonPlanarCoordinate* others[], int count, int proximity)
 {
   int i,o;
   float temp;
@@ -117,7 +117,7 @@ void SphericalCoordinate::randomMove(float scale)
     totalEnergy += nClosest[i];
     
   return(totalEnergy);
-}*/
+}
 
 void SphericalCoordinate::backtrack()
 {
